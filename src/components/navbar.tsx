@@ -31,16 +31,16 @@ export const Navbar = () => {
 
   return (
     <div className="w-full">
-      <nav className="container relative flex flex-wrap items-center justify-between p-8 mx-auto lg:justify-between xl:px-1">
+      <nav className="container relative flex flex-wrap items-center justify-between p-5 mx-auto lg:justify-between xl:px-1">
         {/* Logo  */}
         <Link href="/">
-          <span className="flex items-center  -space-x-3 font-medium text-black-500 dark:text-gray-100 ">
-            <span>
+          <span className="flex items-center  space-x-1 font-medium text-black-500 dark:text-gray-100 ">
+            <span className="w-14 aspect-square relative">
               <Image
                 src="/img/logo.svg"
-                width="100"
                 alt="Logo SMA Methodist 1 Palembang"
-                height="100"
+                fill
+                className="object-cover"
               />
             </span>
             <div className="flex flex-col -space-y-1 text-md">
@@ -83,7 +83,7 @@ export const Navbar = () => {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-lg font-medium"
+                    className="text-sm font-medium flex items-center"
                   >
                     <span className="mr-1 text-md">{item.logo}</span>
                     {item.name}

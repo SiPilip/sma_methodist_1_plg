@@ -1,5 +1,11 @@
-import Image from "next/image";
+import Hero from "@/components/home/hero";
+import TentangKami from "@/components/home/tentang_kami";
 
 export default function Home() {
-  return <p>kontol</p>;
+  return (
+    <>
+      <Hero />
+      <TentangKami />
+    </>
+  );
 }
