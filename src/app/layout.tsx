@@ -24,8 +24,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.className} antialiased`}>
-        <ThemeProvider attribute="class">
+      <body className={`${poppins.className} antialiased bg-gray-100`}>
+        <ThemeProvider attribute="class" defaultTheme="light">
           <Navbar />
           {children}
         </ThemeProvider>

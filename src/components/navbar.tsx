@@ -30,7 +30,7 @@ export const Navbar = () => {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white">
       <nav className="container relative flex flex-wrap items-center justify-between p-5 mx-auto lg:justify-between xl:px-1">
         {/* Logo  */}
         <Link href="/">

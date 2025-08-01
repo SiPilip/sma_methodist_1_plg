@@ -4,7 +4,7 @@ import { Container } from "../container";
 export default function TentangKami() {
   return (
     <section className="bg-blue-50">
-      <Container className="flex flex-col md:flex-row justify-between items-center py-10 gap-10">
+      <Container className="flex flex-col md:flex-row justify-between items-center py-24 gap-10">
         <div className="w-full md:w-1/2 text-center md:text-left">
           <h1 className="text-2xl font-bold bg-sky-950 rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
             Tentang Kami
