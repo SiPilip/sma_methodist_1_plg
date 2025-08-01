@@ -6,6 +6,7 @@ export default function Home() {
     <>
       <Hero />
       <TentangKami />
+      <div className="bg-white my-20">Footer</div>
     </>
   );
 }
