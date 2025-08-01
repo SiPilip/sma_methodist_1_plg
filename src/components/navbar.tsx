@@ -89,6 +89,13 @@ export const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
+                <Link
+                  key="daftar"
+                  href="/"
+                  className="text-sm font-medium flex items-center"
+                >
+                  Daftar Sekarang!
+                </Link>
               </div>
             </SheetContent>
           </Sheet>
