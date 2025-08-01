@@ -57,7 +57,7 @@ export const Navbar = () => {
       <nav className="container relative flex flex-wrap items-center justify-between p-5 mx-auto lg:justify-between xl:px-1">
         {/* Logo  */}
         <Link href="/">
-          <span className="flex items-center  space-x-1 font-medium text-black-500 dark:text-gray-100 ">
+          <span className="flex items-center space-x-1 font-medium text-black-500 dark:text-gray-100 ">
             <span className="w-14 aspect-square relative">
               <Image
                 src="/img/logo.svg"
@@ -94,6 +94,9 @@ export const Navbar = () => {
 
         {/* Mobile Navigation */}
         <div className="lg:hidden flex items-center gap-3">
+          <div>
+            <ThemeChanger />
+          </div>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">
@@ -122,7 +125,6 @@ export const Navbar = () => {
               </div>
             </SheetContent>
           </Sheet>
-          <ThemeChanger />
         </div>
 
         {/* Theme Changer and Get Started */}
