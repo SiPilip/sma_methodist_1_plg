@@ -7,7 +7,7 @@ export default function TentangKami() {
       <Container className="flex flex-col md:flex-row justify-between items-center py-24 gap-10">
         <div className="w-full md:w-1/2 text-center md:text-left">
           <h2 className="text-2xl font-bold bg-sky-950 rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
-            Tentang SMA Methodist 1 Palembang
+            Tentang Kami
           </h2>
           <p className="mt-10 text-gray-600 leading-relaxed">
             SMA Methodist 1 Palembang adalah institusi pendidikan yang
