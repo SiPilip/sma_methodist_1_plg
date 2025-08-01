@@ -7,15 +7,15 @@ import imgdummy from "@/../public/img/berita_dummy.png";
 export default function Berita() {
   return (
     <Container className="py-10">
-      <h1 className="text-2xl">Berita</h1>
+      <h1 className="text-2xl font-bold">Berita Sekolah</h1>
 
-      <div className="grid grid-cols-3 gap-5 mt-5">
-        <Card className="overflow-hidden">
-          <div className="bg-red-100 w-full relative h-32">
+      <div className="grid grid-cols-1 gap-5 mt-5 lg:grid-cols-3">
+        <Card className="overflow-hidden group shadow-none hover:shadow-sm transition-all duration-300">
+          <div className="bg-red-100 w-full relative h-52 overflow-hidden">
             <Image
               src={imgdummy}
               fill
-              className="object-cover absolute"
+              className="object-cover absolute group-hover:scale-105 transition-all duration-300 group-hover:rounded-lg"
               alt="dummy"
             />
           </div>
@@ -26,15 +26,11 @@ export default function Berita() {
             </h3>
           </CardHeader>
           <CardContent>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
+            <p className="text-sm text-gray-500 -mt-4">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+              quos.
+            </p>
           </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>Aw</CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>Aw</CardHeader>
         </Card>
       </div>
     </Container>
