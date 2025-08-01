@@ -25,7 +25,7 @@ export default function TentangKami() {
         <div className="w-full md:w-1/2">
           <div className="relative w-full h-96 overflow-hidden rounded-2xl">
             <Image
-              src="/img/home-tentang_kami.svg"
+              src="/img/tentang-kami.png"
               alt="Gedung Sekolah SMA Methodist 1 Palembang"
               fill
               className="object-cover"
