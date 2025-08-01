@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import ThemeChanger from "./darkswitch";
 import Image from "next/image";
@@ -21,6 +22,22 @@ import {
 } from "react-icons/hi2";
 
 export const Navbar = () => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrolled]);
+
   const navigation = [
     { name: "Profil Sekolah", href: "/", logo: <HiAcademicCap /> },
     { name: "Berita", href: "/", logo: <HiNewspaper /> },
@@ -30,7 +47,13 @@ export const Navbar = () => {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-blue-950">
+    <div
+      className={`w-full sticky top-0 z-50 transition-all ease-in-out duration-300 ${
+        scrolled
+          ? "shadow-lg bg-white/80 dark:bg-blue-950/80 backdrop-blur-lg"
+          : "bg-white dark:bg-blue-950"
+      }`}
+    >
       <nav className="container relative flex flex-wrap items-center justify-between p-5 mx-auto lg:justify-between xl:px-1">
         {/* Logo  */}
         <Link href="/">
