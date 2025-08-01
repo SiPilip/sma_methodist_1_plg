@@ -58,35 +58,41 @@ const Hero = () => {
   }, [api]);
 
   return (
-    <div className="relative h-[80vh] w-full overflow-hidden">
+    <section
+      className="relative h-[80vh] w-full overflow-hidden"
+      aria-label="Selamat Datang di SMA Methodist 1 Palembang"
+    >
       <video
         autoPlay
         loop
         muted
         className="absolute top-0 left-0 w-full h-full object-cover"
+        aria-label="Video drone pemandangan sekolah SMA Methodist 1 Palembang"
       >
         <source src="/videos/hero_drone.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
+        Browser Anda tidak mendukung tag video.
       </video>
       <div className="absolute inset-0 bg-[#2E3853]/60 bg-opacity-50 flex flex-col items-center justify-center">
         <Container>
           <Carousel
             setApi={setApi}
-            className="w-full "
+            className="w-full"
             plugins={[
               Autoplay({
                 delay: 5000,
                 stopOnInteraction: false,
               }),
             ]}
+            aria-roledescription="carousel"
+            aria-label="Visi, Misi, dan Kata Sambutan"
           >
             <CarouselContent>
               {carouselItems.map((item, index) => (
-                <CarouselItem key={index}>
+                <CarouselItem key={index} aria-roledescription="slide">
                   <div className="p-1 text-white">
-                    <h3 className="text-3xl lg:text-5xl font-semibold">
+                    <h2 className="text-3xl lg:text-5xl font-semibold">
                       {item.title}
-                    </h3>
+                    </h2>
                     <p className="mt-2 lg:text-xl max-w-4xl">{item.content}</p>
                   </div>
                 </CarouselItem>
@@ -106,7 +112,7 @@ const Hero = () => {
           </div>
         </Container>
       </div>
-    </div>
+    </section>
   );
 };
 

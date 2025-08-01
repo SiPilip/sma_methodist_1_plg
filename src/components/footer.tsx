@@ -5,7 +5,7 @@ import { HiMail, HiPhone } from "react-icons/hi";
 
 export default function Footer() {
   return (
-    <div className="bg-[#2E3853] py-10 text-white">
+    <div className="bg-blue-950 py-10 text-white">
       <Container>
         <div className="flex flex-col items-center gap-8 text-center">
           <div className="flex gap-6">
@@ -73,7 +73,7 @@ export default function Footer() {
               width={80}
               height={80}
             />
-            <div className="flex flex-col place-items-start text-md text-white">
+            <div className="flex flex-col place-items-start text-md -space-y-1 text-white">
               <span className="font-semibold">SMA METHODIST 1</span>
               <span>PALEMBANG</span>
             </div>
