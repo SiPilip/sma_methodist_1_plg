@@ -70,7 +70,7 @@ export const Navbar = () => {
         </NavigationMenu>
 
         {/* Mobile Navigation */}
-        <div className="lg:hidden">
+        <div className="lg:hidden flex items-center gap-3">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">
@@ -92,6 +92,7 @@ export const Navbar = () => {
               </div>
             </SheetContent>
           </Sheet>
+          <ThemeChanger />
         </div>
 
         {/* Theme Changer and Get Started */}
