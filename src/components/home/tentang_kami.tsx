@@ -3,7 +3,7 @@ import { Container } from "../container";
 
 export default function TentangKami() {
   return (
-    <section className="bg-blue-50 dark:bg-[#2E3853]">
+    <section className="bg-blue-50 dark:bg-[#2E3853] group">
       <Container className="flex flex-col md:flex-row justify-between items-center py-24 gap-10">
         <div className="w-full md:w-1/2 text-center md:text-left">
           <h2 className="text-2xl font-bold bg-sky-950 dark:bg-[#7184BF] rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
@@ -22,13 +22,13 @@ export default function TentangKami() {
             pembelajar kami yang dinamis dan berprestasi.
           </p>
         </div>
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/2 ">
           <div className="relative w-full h-96 overflow-hidden rounded-2xl">
             <Image
               src="/img/tentang-kami.png"
               alt="Gedung Sekolah SMA Methodist 1 Palembang"
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-105 transition-all duration-300"
             />
           </div>
         </div>

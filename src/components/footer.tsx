@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <div className="bg-blue-950 py-10 text-white">
       <Container>
-        <div className="flex flex-col items-center gap-8 text-center">
+        <div className="flex flex-col items-center gap-8 text-center lg:px-2 px-10">
           <div className="flex gap-6">
             <Link
               href="https://www.facebook.com"
@@ -50,12 +50,12 @@ export default function Footer() {
             </Link>
           </div>
 
-          <p className="font-medium">
+          <p className="font-medium text-sm lg:text-base">
             Jl. Jend. Sudirman No.KM 3,5, Pahlawan, Kec. Kemuning, Kota
             Palembang, Sumatera Selatan 30126
           </p>
 
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex lg:flex-row flex-col gap-2 items-center text-sm lg:text-base">
             <p className="flex items-center gap-2">
               <HiPhone />
               <span>(0711)313861</span>
@@ -66,7 +66,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex -space-x-2">
+          <div className="flex -space-x-2 items-center">
             <Image
               src="/img/logo.svg"
               alt="Logo Sekolah"
@@ -81,7 +81,7 @@ export default function Footer() {
 
           <div className="border-t border-gray-700 w-full "></div>
 
-          <div className="text-sm text-gray-400">
+          <div className="text-xs lg:text-sm text-gray-400">
             <p>
               &copy; {new Date().getFullYear()} SMA Methodist 1 Palembang. All
               Rights Reserved.

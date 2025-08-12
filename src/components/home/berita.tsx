@@ -16,7 +16,7 @@ export default function Berita() {
         </h2>
 
         <div className="grid grid-cols-1 gap-5 mt-5 lg:grid-cols-3">
-          <Card className="overflow-hidden group shadow-none hover:shadow-sm transition-all duration-300 dark:bg-[#2E3853]">
+          <Card className="overflow-hidden group shadow-none hover:shadow-md hover:-translate-y-1 transition-all duration-300 dark:bg-[#2E3853] lg:rounded-3xl">
             <div className="bg-red-100 w-full relative h-52 overflow-hidden">
               <Image
                 src={imgdummy}
