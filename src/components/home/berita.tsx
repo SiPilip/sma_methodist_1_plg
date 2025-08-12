@@ -7,7 +7,7 @@ import imgdummy from "@/../public/img/berita_dummy.png";
 export default function Berita() {
   return (
     <section
-      className="py-16 dark:bg-[#495A87]"
+      className="py-16 dark:bg-[#495A87] "
       aria-labelledby="berita-sekolah"
     >
       <Container>

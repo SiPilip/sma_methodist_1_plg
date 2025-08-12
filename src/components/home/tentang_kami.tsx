@@ -1,9 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import { Container } from "../container";
+import bgBatik from "@/../public/img/bg-batik.png";
 
 export default function TentangKami() {
   return (
-    <section className="bg-blue-50 dark:bg-[#2E3853] group">
+    <section className="bg-blue-50 dark:bg-[#2E3853] group relative overflow-hidden">
+      <Image
+        src={bgBatik}
+        className="absolute left-0 top-0 h-full w-full object-cover opacity-30 animate-kenburns"
+        alt="footer-bg"
+      />
       <Container className="flex flex-col md:flex-row justify-between items-center py-24 gap-10">
         <div className="w-full md:w-1/2 text-center md:text-left">
           <h2 className="text-2xl font-bold bg-sky-950 dark:bg-[#7184BF] rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
@@ -23,12 +31,12 @@ export default function TentangKami() {
           </p>
         </div>
         <div className="w-full md:w-1/2 ">
-          <div className="relative w-full h-96 overflow-hidden rounded-2xl">
+          <div className="relative w-full h-96 overflow-hidden rounded-2xl group-hover:inset-shadow-sm">
             <Image
               src="/img/tentang-kami.png"
               alt="Gedung Sekolah SMA Methodist 1 Palembang"
               fill
-              className="object-cover group-hover:scale-105 transition-all duration-300"
+              className="object-cover group-hover:scale-105 transition-all duration-300 "
             />
           </div>
         </div>
