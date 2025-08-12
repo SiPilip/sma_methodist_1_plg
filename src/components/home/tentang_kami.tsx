@@ -3,13 +3,13 @@ import { Container } from "../container";
 
 export default function TentangKami() {
   return (
-    <section className="bg-blue-50">
+    <section className="bg-blue-50 dark:bg-[#2E3853]">
       <Container className="flex flex-col md:flex-row justify-between items-center py-24 gap-10">
         <div className="w-full md:w-1/2 text-center md:text-left">
-          <h2 className="text-2xl font-bold bg-sky-950 rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
+          <h2 className="text-2xl font-bold bg-sky-950 dark:bg-[#7184BF] rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
             Tentang Kami
           </h2>
-          <p className="mt-10 text-gray-600 leading-relaxed">
+          <p className="mt-10 text-gray-600 leading-relaxed dark:text-white">
             SMA Methodist 1 Palembang adalah institusi pendidikan yang
             berdedikasi untuk menciptakan generasi unggul secara akademis dan
             berkarakter. Kami menyediakan lingkungan belajar yang inspiratif

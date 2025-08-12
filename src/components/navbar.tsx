@@ -74,7 +74,7 @@ export const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <NavigationMenu className="hidden lg:flex">
+        <NavigationMenu className="hidden xl:flex">
           <NavigationMenuList>
             {navigation.map((item) => (
               <NavigationMenuItem key={item.name}>
@@ -93,7 +93,7 @@ export const Navbar = () => {
         </NavigationMenu>
 
         {/* Mobile Navigation */}
-        <div className="lg:hidden flex items-center gap-3">
+        <div className="xl:hidden flex items-center gap-3">
           <div>
             <ThemeChanger />
           </div>
@@ -128,7 +128,7 @@ export const Navbar = () => {
         </div>
 
         {/* Theme Changer and Get Started */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3">
           <ThemeChanger />
           <Button asChild>
             <Link href="/">Daftar Sekarang!</Link>

@@ -6,14 +6,17 @@ import imgdummy from "@/../public/img/berita_dummy.png";
 
 export default function Berita() {
   return (
-    <section className="py-16" aria-labelledby="berita-sekolah">
+    <section
+      className="py-16 dark:bg-[#495A87]"
+      aria-labelledby="berita-sekolah"
+    >
       <Container>
         <h2 id="berita-sekolah" className="text-2xl font-bold">
           Berita Sekolah
         </h2>
 
         <div className="grid grid-cols-1 gap-5 mt-5 lg:grid-cols-3">
-          <Card className="overflow-hidden group shadow-none hover:shadow-sm transition-all duration-300">
+          <Card className="overflow-hidden group shadow-none hover:shadow-sm transition-all duration-300 dark:bg-[#2E3853]">
             <div className="bg-red-100 w-full relative h-52 overflow-hidden">
               <Image
                 src={imgdummy}
@@ -23,13 +26,15 @@ export default function Berita() {
               />
             </div>
             <CardHeader className="flex flex-col gap-2">
-              <Badge>Prestasi</Badge>
+              <Badge className="dark:bg-[#7184BF] dark:text-white bg-[#F86302]">
+                Prestasi
+              </Badge>
               <h3 className="text-lg font-bold">
                 JUARA 1 LOMBA DESAIN POSTER TINGKAT PROVINSI SUMATERA SELATAN
               </h3>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500 -mt-4">
+              <p className="text-sm text-gray-500 -mt-4 dark:text-white">
                 Siswa kami kembali mengukir prestasi gemilang dengan meraih
                 Juara 1 dalam Lomba Desain Poster tingkat Provinsi Sumatera
                 Selatan. Karya inovatif dan pesan kuat yang diusung berhasil
