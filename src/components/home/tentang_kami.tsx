@@ -9,7 +9,7 @@ export default function TentangKami() {
     <section className="bg-blue-50 dark:bg-[#2E3853] group relative overflow-hidden">
       <Image
         src={bgBatik}
-        className="absolute left-0 top-0 h-full w-full object-cover opacity-30 animate-kenburns"
+        className="absolute left-0 top-0 h-full w-full object-cover opacity-50 dark:opacity-30 animate-kenburns"
         alt="footer-bg"
       />
       <Container className="flex flex-col md:flex-row justify-between items-center py-24 gap-10">
