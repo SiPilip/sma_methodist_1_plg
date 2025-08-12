@@ -99,7 +99,11 @@ export const Navbar = () => {
           </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                className="dark:bg-[#2E3853] "
+              >
                 <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
@@ -130,8 +134,18 @@ export const Navbar = () => {
         {/* Theme Changer and Get Started */}
         <div className="hidden xl:flex items-center gap-3">
           <ThemeChanger />
-          <Button asChild>
-            <Link href="/">Daftar Sekarang!</Link>
+          <Button
+            asChild
+            className="relative group overflow-hidden dark:bg-white dark-hover:bg-white bg-blue-950 hover:bg-blue-950"
+          >
+            <Link href="/" className="bg-blue-950">
+              <span className="transition-all duration-300 group-hover:-translate-y-8">
+                Daftar Sekarang!
+              </span>
+              <span className="absolute transition-all duration-300 translate-y-8 group-hover:translate-y-0 ">
+                Buruan! 🥹
+              </span>
+            </Link>
           </Button>
         </div>
       </nav>
