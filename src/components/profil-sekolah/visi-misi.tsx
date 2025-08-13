@@ -51,7 +51,7 @@ function Content({
       )}
     >
       <div className="w-full md:w-1/2 text-center md:text-left">
-        <h2 className="lg:text-2xl text-base lg:font-semibold font-medium bg-sky-950 transisi dark:bg-[#7184BF] rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
+        <h2 className="lg:text-2xl text-base font-semibold  bg-sky-950 transisi dark:bg-[#7184BF] rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
           {title}
         </h2>
         <div className="mt-10 text-gray-600 lg:text-base text-sm leading-relaxed dark:text-white bg-gray-50 dark:bg-[#2E3853] p-5 rounded-md transisi">
