@@ -14,10 +14,10 @@ export default function TentangKami() {
       />
       <Container className="flex flex-col md:flex-row justify-between items-center py-24 gap-10">
         <div className="w-full md:w-1/2 text-center md:text-left">
-          <h2 className="text-2xl font-bold bg-sky-950 dark:bg-[#7184BF] rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
+          <h2 className="lg:text-2xl text-sm lg:font-semibold font-medium bg-sky-950 dark:bg-[#7184BF] rounded-full w-fit text-white py-3 px-10 mx-auto md:mx-0">
             Tentang Kami
           </h2>
-          <p className="mt-10 text-gray-600 leading-relaxed dark:text-white">
+          <p className="mt-10 text-gray-600 lg:text-base text-sm leading-relaxed dark:text-white">
             SMA Methodist 1 Palembang adalah institusi pendidikan yang
             berdedikasi untuk menciptakan generasi unggul secara akademis dan
             berkarakter. Kami menyediakan lingkungan belajar yang inspiratif
@@ -31,7 +31,7 @@ export default function TentangKami() {
           </p>
         </div>
         <div className="w-full md:w-1/2 ">
-          <div className="relative w-full h-96 overflow-hidden rounded-2xl group-hover:inset-shadow-sm">
+          <div className="relative w-full lg:h-96 aspect-square lg:aspect-auto overflow-hidden rounded-2xl group-hover:inset-shadow-sm">
             <Image
               src="/img/tentang-kami.png"
               alt="Gedung Sekolah SMA Methodist 1 Palembang"
