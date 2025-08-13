@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Navbar } from "@/components/navbar";
 import "./globals.css";
 import NavbarTop from "@/components/navbar_top";
+import Footer from "@/components/footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ export default function RootLayout({
           <NavbarTop />
           <Navbar />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

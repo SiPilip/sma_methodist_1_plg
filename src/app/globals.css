@@ -133,3 +133,7 @@
 .animate-kenburns {
   animation: kenburns 20s ease-in-out infinite alternate;
 }
+
+.transisi {
+  @apply transition-all duration-300 ease-in-out;
+}

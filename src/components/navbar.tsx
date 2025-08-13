@@ -39,11 +39,19 @@ export const Navbar = () => {
   }, [scrolled]);
 
   const navigation = [
-    { name: "Profil Sekolah", href: "/", logo: <HiAcademicCap /> },
-    { name: "Berita", href: "/", logo: <HiNewspaper /> },
-    { name: "Akademik & Dokumen", href: "/", logo: <HiTag /> },
-    { name: "Kegiatan & Informasi", href: "/", logo: <HiBell /> },
-    { name: "PPDB", href: "/", logo: <HiMegaphone /> },
+    {
+      name: "Profil Sekolah",
+      href: "/profil-sekolah",
+      logo: <HiAcademicCap />,
+    },
+    { name: "Berita", href: "/berita", logo: <HiNewspaper /> },
+    {
+      name: "Akademik & Dokumen",
+      href: "/akademik-dan-dokumen",
+      logo: <HiTag />,
+    },
+    { name: "Kegiatan & Informasi", href: "/informasi", logo: <HiBell /> },
+    { name: "PPDB", href: "/ppdb", logo: <HiMegaphone /> },
   ];
 
   return (
