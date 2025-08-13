@@ -34,12 +34,12 @@ export default function Berita() {
               <Badge className="dark:bg-[#7184BF] dark:text-white bg-[#F86302]">
                 Prestasi
               </Badge>
-              <h3 className="text-lg font-bold">
+              <h3 className="lg:text-lg line-clamp-2 leading-5 lg:leading-6 font-bold">
                 JUARA 1 LOMBA DESAIN POSTER TINGKAT PROVINSI SUMATERA SELATAN
               </h3>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500 -mt-4 dark:text-white">
+              <p className="lg:text-sm text-xs text-gray-500 -mt-4 dark:text-white line-clamp-3">
                 Siswa kami kembali mengukir prestasi gemilang dengan meraih
                 Juara 1 dalam Lomba Desain Poster tingkat Provinsi Sumatera
                 Selatan. Karya inovatif dan pesan kuat yang diusung berhasil
