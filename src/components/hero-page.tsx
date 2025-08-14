@@ -11,7 +11,7 @@ export default function HeroPage({ title }: { title: string }) {
         className="object-cover absolute object-bottom"
         alt="bg-hero"
       />
-      <div className="absolute inset-0 bg-[#2E3853]/60 bg-opacity-50 flex flex-col items-center justify-center text-white font-bold lg:text-6xl text-2xl uppercase lg:pt-30 pt-20">
+      <div className="absolute inset-0 bg-[#2E3853]/60 bg-opacity-50 flex flex-col items-center justify-center text-white font-bold lg:text-6xl text-3xl uppercase lg:pt-30 pt-20">
         <Container>{title}</Container>
       </div>
     </div>

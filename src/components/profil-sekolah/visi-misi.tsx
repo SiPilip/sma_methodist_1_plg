@@ -8,7 +8,7 @@ export default function VisiMisi() {
       id="visi-misi"
       className="flex flex-row gap-5 bg-[#DFEBF7] dark:bg-[#495A87] transisi"
     >
-      <Container className="flex flex-col  justify-between items-center lg:py-24 py-16 gap-10 lg:gap-20">
+      <Container className="flex flex-col  justify-between items-center lg:py-24 py-10 gap-10 lg:gap-20">
         <Content
           title="Visi"
           content="Menjadi sekolah unggulan yang menghasilkan lulusan berkualitas tinggi, berakhlak mulia, berwawasan global, dan siap menghadapi tantangan masa depan dengan mengintegrasikan nilai-nilai Kristiani dalam seluruh aspek pembelajaran."
