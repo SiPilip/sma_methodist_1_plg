@@ -1,6 +1,7 @@
 import { Container } from "@/components/container";
 import Image from "next/image";
 import BgHero from "@/../public/img/bg-hero-page.png";
+import Link from "next/link";
 
 export default function BeritaContent() {
   return (
@@ -56,7 +57,10 @@ export default function BeritaContent() {
             <h3 className="font-semibold text-blue-950 dark:text-white text-xl mb-2">
               Berita Lainnya
             </h3>
-            <div className="grid grid-cols-5 gap-3">
+            <Link
+              className="grid grid-cols-5 gap-3 hover:bg-blue-950/20 transisi p-3 rounded-md"
+              href={"/"}
+            >
               <div className="col-span-2 relative h-full w-full">
                 <Image
                   src={BgHero}
@@ -78,7 +82,7 @@ export default function BeritaContent() {
                   Id dignissim tempus viverra habitasse
                 </p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </Container>
