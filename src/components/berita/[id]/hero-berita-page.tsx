@@ -18,9 +18,9 @@ export default function HeroBeritaPage({ title }: { title: string }) {
           <Badge className="lg:text-xl bg-[#F86302] font-semibold rounded-full px-5 lg:px-8 -mb-2 py-1 dark:text-white">
             Kegiatan Siswa
           </Badge>
-          <h3 className="uppercase lg:text-3xl xl:text-4xl text-xl xl:leading-14 lg:leading-11 leading-6 font-bold transisi">
+          <h1 className="uppercase lg:text-3xl xl:text-4xl text-xl xl:leading-14 lg:leading-11 leading-6 font-bold transisi">
             {title}
-          </h3>
+          </h1>
           <p className="flex gap-2 items-center text-xs lg:text-lg xl:text-xl -mt-3">
             <HiClock />
             <span className="font-medium">12 Desember 2024</span>

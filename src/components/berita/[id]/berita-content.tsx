@@ -77,9 +77,9 @@ export default function BeritaContent() {
               turpis aenean. Tristique lobortis eget tristique a consequat.
             </p>
             <div className="lg:col-span-2 lg:mt-0 mt-5">
-              <h3 className="font-semibold text-blue-950 dark:text-white text-xl mb-2">
+              <p className="font-semibold text-blue-950 dark:text-white text-xl mb-2">
                 Berita Lainnya
-              </h3>
+              </p>
               <Link
                 className="grid grid-cols-5 gap-3 hover:bg-blue-950/20 transisi p-3 rounded-md"
                 href={"/"}
@@ -93,9 +93,9 @@ export default function BeritaContent() {
                   />
                 </div>
                 <div className="col-span-3">
-                  <h2 className="text-base font-semibold leading-5 mb-2">
+                  <p className="text-base font-semibold leading-5 mb-2">
                     KEGIATAN FIELD TRIP KELAS IX MENGUNJUNGI MUSEUM SCIENCE
-                  </h2>
+                  </p>
                   <hr className="mb-2 dark:border-blue-900" />
                   <p className="line-clamp-4 text-xs">
                     Lorem ipsum dolor sit amet consectetur. Nisl purus leo eu
