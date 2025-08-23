@@ -28,59 +28,65 @@ export default function BeritaList() {
   }, [searchValue, search, router]);
 
   return (
-    <Container className="py-10">
-      <section className="flex flex-col gap-5 mb-5">
-        <Input
-          placeholder="Cari disini..."
-          className="text-xs lg:text-sm"
-          value={searchValue}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setSearchValue(e.target.value)
-          }
-        />
-        <div className="flex gap-1 flex-wrap">
-          {newsCategory.map((item, index) => (
-            <Badge
-              key={"badge-search-" + index}
-              className={cn(
-                "px-2 py-1 rounded-xs capitalize bg-transparent border-[1px] border-blue-950 text-blue-950 cursor-pointer lg:text-sm text-xs transisi hover:bg-blue-950 hover:text-white",
-                item === category && "bg-blue-950 text-white"
-              )}
-              onClick={() => router.push(`?category=${item}`)}
-            >
-              {item}
-            </Badge>
-          ))}
+    <section className="dark:bg-[#495A87] transisi">
+      <Container className="py-10">
+        <div className="flex flex-col gap-5 mb-5">
+          <Input
+            placeholder="Cari disini..."
+            className="text-xs lg:text-sm dark:bg-white/20 dark:text-white dark:placeholder:text-white"
+            value={searchValue}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchValue(e.target.value)
+            }
+          />
+          <div className="flex gap-2 flex-wrap">
+            {newsCategory.map((item, index) => (
+              <Badge
+                key={"badge-search-" + index}
+                className={cn(
+                  "px-2 py-1 rounded-xs capitalize bg-transparent border-[1px] border-blue-950 dark:border-white text-blue-950 dark:text-white cursor-pointer lg:text-sm text-xs transisi hover:bg-blue-950 dark:hover:bg-white/20 hover:text-white",
+                  item === category && "bg-blue-950 text-white"
+                )}
+                onClick={() => router.push(`?category=${item}`)}
+              >
+                {item}
+              </Badge>
+            ))}
+          </div>
         </div>
-      </section>
 
-      {dummyNews.map((item, index) => (
-        <div
-          className="flex flex-row items-center py-5 lg:px-10 gap-5 hover:bg-gray-200 transisi cursor-pointer"
-          key={"berita " + index}
-          onClick={() => router.push(`/berita/${item.id}`)}
-        >
-          <div className="relative lg:w-3/12 w-6/12 lg:h-52 h-32 overflow-hidden bg-amber-600">
-            <Image
-              src="/img/tentang-kami.png"
-              alt="Gedung Sekolah SMA Methodist 1 Palembang"
-              fill
-              className="object-cover group-hover:scale-105 transition-all duration-300 "
-            />
+        {dummyNews.map((item, index) => (
+          <div
+            className="flex flex-row items-center py-5 lg:px-10 gap-5 hover:bg-gray-200 dark:hover:bg-blue-950/20 transisi cursor-pointer"
+            key={"berita " + index}
+            onClick={() => router.push(`/berita/${item.id}`)}
+          >
+            <div className="relative lg:w-3/12 w-6/12 lg:h-52 h-32 overflow-hidden bg-amber-600">
+              <Image
+                src="/img/tentang-kami.png"
+                alt="Gedung Sekolah SMA Methodist 1 Palembang"
+                fill
+                className="object-cover group-hover:scale-105 transition-all duration-300 "
+              />
+            </div>
+            <div className="lg:w-9/12 w-6/12">
+              <p className="lg:text-sm text-xs text-gray-500 dark:text-gray-300">
+                {item.date}
+              </p>
+              <h3 className="lg:text-xl text-base font-semibold ">
+                {item.title}
+              </h3>
+              <Badge className="lg:my-1 rounded-xs lg:text-xs text-[0.5rem] bg-blue-950 dark:text-white">
+                {item.category}
+              </Badge>
+              <p className="lg:text-sm text-xs line-clamp-4 mt-1 lg:mt-0">
+                {item.content}
+              </p>
+            </div>
           </div>
-          <div className="lg:w-9/12 w-6/12">
-            <p className="lg:text-sm text-xs text-gray-500">{item.date}</p>
-            <h3 className="lg:text-xl text-base font-semibold">{item.title}</h3>
-            <Badge className="lg:my-1 rounded-xs lg:text-xs text-[0.5rem] bg-blue-950">
-              {item.category}
-            </Badge>
-            <p className="lg:text-sm text-xs line-clamp-4 mt-1 lg:mt-0">
-              {item.content}
-            </p>
-          </div>
-        </div>
-      ))}
-    </Container>
+        ))}
+      </Container>
+    </section>
   );
 }
 
