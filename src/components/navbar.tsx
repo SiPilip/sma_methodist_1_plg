@@ -47,7 +47,7 @@ export const Navbar = () => {
     { name: "Berita", href: "/berita", logo: <HiNewspaper /> },
     {
       name: "Akademik & Dokumen",
-      href: "/akademik-dan-dokumen",
+      href: "/dokumen",
       logo: <HiTag />,
     },
     { name: "Kegiatan & Informasi", href: "/informasi", logo: <HiBell /> },
