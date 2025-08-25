@@ -44,13 +44,12 @@ export const Navbar = () => {
       href: "/profil-sekolah",
       logo: <HiAcademicCap />,
     },
-    { name: "Berita", href: "/berita", logo: <HiNewspaper /> },
+    { name: "Kegiatan & Informasi", href: "/berita", logo: <HiBell /> },
     {
       name: "Akademik & Dokumen",
       href: "/dokumen",
       logo: <HiTag />,
     },
-    { name: "Kegiatan & Informasi", href: "/informasi", logo: <HiBell /> },
     { name: "PPDB", href: "/ppdb", logo: <HiMegaphone /> },
   ];
 
