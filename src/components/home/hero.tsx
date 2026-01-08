@@ -59,7 +59,7 @@ const Hero = () => {
 
   return (
     <section
-      className="relative h-[80vh] w-full overflow-hidden"
+      className="relative h-[70vh] w-full overflow-hidden"
       aria-label="Selamat Datang di SMA Methodist 1 Palembang"
     >
       <video

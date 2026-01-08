@@ -13,13 +13,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
-import {
-  HiAcademicCap,
-  HiBell,
-  HiMegaphone,
-  HiNewspaper,
-  HiTag,
-} from "react-icons/hi2";
+import { HiAcademicCap, HiBell, HiMegaphone, HiTag } from "react-icons/hi2";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
