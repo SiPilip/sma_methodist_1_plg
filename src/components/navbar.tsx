@@ -13,7 +13,14 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
-import { HiAcademicCap, HiBell, HiMegaphone, HiTag } from "react-icons/hi2";
+import {
+  HiAcademicCap,
+  HiBell,
+  HiMegaphone,
+  HiTag,
+  HiUser,
+  HiUsers,
+} from "react-icons/hi2";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -43,6 +50,16 @@ export const Navbar = () => {
       name: "Akademik & Dokumen",
       href: "/dokumen",
       logo: <HiTag />,
+    },
+    {
+      name: "Pengajar",
+      href: "/daftar-guru-karyawan",
+      logo: <HiUser />,
+    },
+    {
+      name: "Siswa",
+      href: "/daftar-siswa",
+      logo: <HiUsers />,
     },
     { name: "PPDB", href: "/ppdb", logo: <HiMegaphone /> },
   ];
