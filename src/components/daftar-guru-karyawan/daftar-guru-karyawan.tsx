@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Container } from "../container"; // Sesuaikan path import
 import Pagination from "../pagination"; // Sesuaikan path import
 import defaultProfilePicture from "@/../public/img/blank-profile-picture.webp";
+import { useRouter } from "next/navigation";
 
 // Tipe data
 type StaffProfile = {
@@ -26,6 +27,8 @@ export default function DaftarGuruKaryawan() {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const router = useRouter();
 
   // --- 1. LOGIKA DEBOUNCING (Delay 1 Detik) ---
   useEffect(() => {
@@ -163,7 +166,10 @@ export default function DaftarGuruKaryawan() {
             {paginatedItems.map((item) => (
               <div
                 key={item.uuid}
-                className="flex flex-col items-center text-center bg-white dark:bg-slate-800 rounded-[24px] p-6 shadow-xl border-b-[8px] border-blue-950 dark:border-slate-500 overflow-hidden hover:-translate-y-1 transition-transform duration-300"
+                className="flex flex-col items-center text-center bg-white dark:bg-slate-800 rounded-[24px] p-6 shadow-xl border-b-[8px] border-blue-950 dark:border-slate-500 overflow-hidden hover:-translate-y-1 transition-transform duration-300 cursor-pointer"
+                onClick={() =>
+                  router.push(`/daftar-guru-karyawan/${item.uuid}`)
+                }
               >
                 <div className="w-24 h-24 mb-4 rounded-full overflow-hidden shadow-sm border-2 border-gray-100 dark:border-slate-600">
                   <Image
@@ -220,8 +226,8 @@ export default function DaftarGuruKaryawan() {
 // --- MOCK DATA ---
 const gurukaryawan: StaffProfile[] = [
   {
-    uuid: "a1",
-    nama: "Budi Santoso",
+    uuid: "oliver-granli",
+    nama: "Oliver Granli",
     nip: "198001012005011001",
     jabatan: "Guru Tetap",
     matapelajaran: "Matematika",
