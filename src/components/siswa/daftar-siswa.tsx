@@ -80,7 +80,7 @@ export default function DaftarSiswa() {
   // Warna background diletakkan DISINI, bukan di Link wrapper.
   // Gunakan 'group-hover' agar warnanya berubah serentak saat baris disorot.
   const bodyCellStyle =
-    "bg-[#DFEBF7] dark:bg-[#7184BF] group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors duration-200 w-full text-left lg:py-3 lg:px-4 p-2 text-black dark:text-white lg:text-base text-xs flex items-center h-full";
+    "bg-[#DFEBF7] dark:bg-[#7184BF] group-hover:bg-blue-200 dark:group-hover:bg-blue-900 transition-colors duration-200 w-full text-left lg:py-3 lg:px-4 p-2 text-black dark:text-white lg:text-base text-xs flex items-center h-full";
 
   // 3. Row Wrapper (Hanya layout grid & gap, TRANSPARAN)
   const rowWrapperStyle = 
@@ -102,7 +102,7 @@ export default function DaftarSiswa() {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
             <div className="relative min-w-[160px]">
-              <select value={selectedClass} onChange={handleClassChange} className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-sm cursor-pointer focus:ring-2 focus:ring-blue-950">
+              <select value={selectedClass} onChange={handleClassChange} className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-sm cursor-pointer focus:ring-2 focus:ring-blue-950 dark:text-black">
                 {uniqueClasses.map((cls) => (
                   <option key={cls} value={cls}>{cls}</option>
                 ))}
@@ -110,7 +110,7 @@ export default function DaftarSiswa() {
               <HiFunnel className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             </div>
             <div className="relative w-full lg:w-[300px]">
-              <input type="text" placeholder="Cari Nama / NIP..." value={searchQuery} onChange={handleSearchChange} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-950" />
+              <input type="text" placeholder="Cari Nama / NIP..." value={searchQuery} onChange={handleSearchChange} className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-950 dark:text-black" />
               <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function DaftarSiswa() {
               <button
                 onClick={(e) => handleClassClick(e, item.kelas)}
                 className="
-                  bg-white/50 border border-blue-200 dark:border-blue-900 
+                  bg-white/50 border border-blue-200 dark:border-blue-900 dark:bg-blue-900
                   text-blue-900 dark:text-blue-100 px-2 py-0.5 rounded text-xs font-bold 
                   hover:bg-blue-600 hover:text-white hover:border-blue-600 
                   dark:hover:bg-blue-500 dark:hover:text-white
@@ -172,13 +172,13 @@ export default function DaftarSiswa() {
 
             {/* CELL: Action */}
             <div className={`${bodyCellStyle} lg:col-span-1 hidden lg:flex justify-center rounded-r-md`}>
-              <HiChevronRight size={20} className="text-gray-400 group-hover:text-blue-600 transition-colors" />
+              <HiChevronRight size={20} className="text-gray-400 group-hover:text-blue-600 dark:text-white transition-colors" />
             </div>
           </Link>
         ))
             ) : (
               // Empty State
-              <div className="py-12 flex flex-col items-center justify-center text-gray-500 italic bg-white rounded-lg">
+              <div className="py-12 flex flex-col items-center justify-center text-gray-500 italic bg-white dark:bg-transparent rounded-lg dark:text-white">
                  <HiMagnifyingGlass size={40} className="mb-2 opacity-50"/>
                 <p>Tidak ada data siswa.</p>
               </div>
