@@ -42,7 +42,7 @@ export const Navbar = () => {
   const navigation = [
     {
       name: "Profil Sekolah",
-      href: "/profil-sekolah",
+      href: "/profil",
       logo: <HiAcademicCap />,
     },
     { name: "Kegiatan & Informasi", href: "/berita", logo: <HiBell /> },
@@ -53,12 +53,12 @@ export const Navbar = () => {
     },
     {
       name: "Pengajar",
-      href: "/daftar-guru-karyawan",
+      href: "/guru-karyawan",
       logo: <HiUser />,
     },
     {
       name: "Siswa",
-      href: "/daftar-siswa",
+      href: "/siswa",
       logo: <HiUsers />,
     },
     { name: "PPDB", href: "/ppdb", logo: <HiMegaphone /> },

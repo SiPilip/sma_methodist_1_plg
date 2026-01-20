@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import GuruKaryawanDetail from "@/components/daftar-guru-karyawan/guru-karyawan-detail";
+import GuruKaryawanDetail from "@/components/guru-karyawan/guru-karyawan-detail";
 import defaultProfilePicture from "@/../public/img/blank-profile-picture.webp";
 
 // --- 1. DATA DUMMY (Tanpa Website & Prestasi) ---
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     siteName: "Website Sekolah Methodist 1 Palembang",
     images: [
       {
-        url: `https://yourwebsite.com${guruData.image}`,
+        url: `https://yourwebsite.com${guruData.image.src}`,
         width: 800,
         height: 800,
         alt: `Foto Profil ${guruData.name}`,
@@ -79,7 +79,7 @@ const jsonLd = {
   "@type": "Person",
   name: guruData.name,
   jobTitle: guruData.jobTitle,
-  image: `https://yourwebsite.com${guruData.image}`,
+  image: `https://yourwebsite.com${guruData.image.src}`,
   description: guruData.description,
   url: `https://yourwebsite.com${guruData.url}`,
   email: guruData.email,

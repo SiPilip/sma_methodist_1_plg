@@ -168,7 +168,7 @@ export default function DaftarGuruKaryawan() {
                 key={item.uuid}
                 className="flex flex-col items-center text-center bg-white dark:bg-slate-800 rounded-[24px] p-6 shadow-xl border-b-[8px] border-blue-950 dark:border-slate-500 overflow-hidden hover:-translate-y-1 transition-transform duration-300 cursor-pointer"
                 onClick={() =>
-                  router.push(`/daftar-guru-karyawan/${item.uuid}`)
+                  router.push(`/guru-karyawan/${item.uuid}`)
                 }
               >
                 <div className="w-24 h-24 mb-4 rounded-full overflow-hidden shadow-sm border-2 border-gray-100 dark:border-slate-600">
