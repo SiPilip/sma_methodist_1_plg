@@ -46,6 +46,7 @@ export default function EditGuruPage({ params }: { params: Promise<{ id: string 
   const { data: guru, isLoading, isError } = useQuery({
     queryKey: ["guru", id],
     queryFn: () => fetchGuruById(id),
+    retry: false, // JANGAN RETRY jika error
   });
 
   // Populate Data saat Fetch Selesai
@@ -159,9 +160,28 @@ export default function EditGuruPage({ params }: { params: Promise<{ id: string 
     }
   };
 
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <div className="bg-red-100 p-6 rounded-full">
+           <HiUser className="text-red-500 text-6xl" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Data Pengajar Tidak Ditemukan</h2>
+        <p className="text-gray-500 max-w-md">
+          Halaman yang Anda cari mungkin telah dihapus atau URL yang Anda masukkan salah.
+        </p>
+        <Link 
+          href="/admin/guru" 
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition-all"
+        >
+          Kembali ke Daftar Guru
+        </Link>
+      </div>
+    );
+  }
+
   // Loading State
   if (isLoading) return <div className="p-10 text-center animate-pulse">Memuat data...</div>;
-  if (isError) return <div className="p-10 text-center text-red-500">Data tidak ditemukan!</div>;
 
   // Styles
   const labelStyle = "block text-xs font-bold text-gray-500 uppercase mb-1.5 tracking-wide";

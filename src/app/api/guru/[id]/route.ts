@@ -3,6 +3,7 @@ import connectDB from "@/lib/db";
 import Guru from "@/models/Guru";
 import { writeFile, unlink } from "fs/promises";
 import path from "path";
+import { isValidObjectId } from "mongoose"; // Import Validasi
 
 type Context = {
   params: Promise<{ id: string }>
@@ -13,19 +14,32 @@ export async function GET(req: Request, context: Context) {
   try {
     const { id } = await context.params;
     await connectDB();
+
+    // 1. Validasi Format ID
+    if (!isValidObjectId(id)) {
+      return NextResponse.json({ message: "Format ID tidak valid" }, { status: 400 });
+    }
+
     const guru = await Guru.findById(id);
+    
+    // 2. Cek Data
     if (!guru) return NextResponse.json({ message: "Data tidak ditemukan" }, { status: 404 });
+    
     return NextResponse.json({ success: true, data: guru }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ success: false, message: "Gagal ambil data" }, { status: 500 });
   }
 }
 
-// PUT: Update Guru (Handle Foto & Pendidikan)
+// PUT: Update Guru
 export async function PUT(req: Request, context: Context) {
   try {
     const { id } = await context.params;
     await connectDB();
+
+    if (!isValidObjectId(id)) {
+        return NextResponse.json({ message: "Format ID tidak valid" }, { status: 400 });
+    }
 
     const oldGuru = await Guru.findById(id);
     if (!oldGuru) return NextResponse.json({ message: "Data tidak ditemukan" }, { status: 404 });
@@ -44,12 +58,10 @@ export async function PUT(req: Request, context: Context) {
     const status = formData.get("status") === 'true';
 
     // Parse Pendidikan
-    let pendidikan = oldGuru.pendidikan; // Default pakai lama
+    let pendidikan = oldGuru.pendidikan; 
     const pendidikanString = formData.get("pendidikan") as string;
     if (pendidikanString) {
-      try {
-        pendidikan = JSON.parse(pendidikanString);
-      } catch (e) { console.error("Parse error", e); }
+      try { pendidikan = JSON.parse(pendidikanString); } catch (e) {}
     }
 
     // Handle Foto
@@ -70,7 +82,9 @@ export async function PUT(req: Request, context: Context) {
       const buffer = Buffer.from(bytes);
       const filename = `guru-${Date.now()}-${file.name.replace(/\s+/g, "-").toLowerCase()}`;
       const uploadDir = path.join(process.cwd(), "public/uploads/guru");
-      await writeFile(path.join(uploadDir, filename), buffer);
+      const filePath = path.join(uploadDir, filename);
+      
+      await writeFile(filePath, buffer);
       fotoUrl = `/uploads/guru/${filename}`;
     }
 
@@ -79,8 +93,7 @@ export async function PUT(req: Request, context: Context) {
       id,
       {
         nama, nip, jabatan, kategori, mataPelajaran, bio, email, noHp, status,
-        pendidikan,
-        foto: fotoUrl
+        pendidikan, foto: fotoUrl
       },
       { new: true }
     );
@@ -92,11 +105,15 @@ export async function PUT(req: Request, context: Context) {
   }
 }
 
-// DELETE: Hapus Guru & Foto
+// DELETE: Hapus Guru
 export async function DELETE(req: Request, context: Context) {
   try {
     const { id } = await context.params;
     await connectDB();
+
+    if (!isValidObjectId(id)) {
+        return NextResponse.json({ message: "Format ID tidak valid" }, { status: 400 });
+    }
 
     const guru = await Guru.findById(id);
     if (!guru) return NextResponse.json({ message: "Data tidak ditemukan" }, { status: 404 });

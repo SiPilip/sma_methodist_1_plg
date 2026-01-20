@@ -38,6 +38,7 @@ export default function EditSiswaPage({ params }: { params: Promise<{ id: string
   const { data: siswa, isLoading, isError } = useQuery({
     queryKey: ["siswa", id],
     queryFn: () => fetchSiswaById(id),
+    retry: false, // JANGAN RETRY
   });
 
   // --- LOGIC KELAS & ANGKATAN ---
@@ -168,8 +169,27 @@ export default function EditSiswaPage({ params }: { params: Promise<{ id: string
     }
   };
 
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <div className="bg-red-100 p-6 rounded-full">
+           <HiAcademicCap className="text-red-500 text-6xl" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Data Siswa Tidak Ditemukan</h2>
+        <p className="text-gray-500 max-w-md">
+          Halaman yang Anda cari mungkin telah dihapus atau URL yang Anda masukkan salah.
+        </p>
+        <Link 
+          href="/admin/siswa" 
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition-all"
+        >
+          Kembali ke Daftar Siswa
+        </Link>
+      </div>
+    );
+  }
+
   if (isLoading) return <div className="p-10 text-center animate-pulse">Memuat data...</div>;
-  if (isError) return <div className="p-10 text-center text-red-500">Siswa tidak ditemukan!</div>;
 
   return (
     <div className="space-y-8 pb-10">

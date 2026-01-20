@@ -3,10 +3,11 @@ import connectDB from "@/lib/db";
 import Berita from "@/models/Berita";
 import { writeFile, unlink } from "fs/promises";
 import path from "path";
+import { isValidObjectId } from "mongoose"; // FIX: Import langsung fungsinya
 
 type Context = { params: Promise<{ id: string }> };
 
-// Helper Slug (Copy dari route utama biar mandiri)
+// Helper Slug
 const createSlug = (title: string) => {
   return title.toLowerCase().replace(/[^a-z0-9 -]/g, "").replace(/\s+/g, "-") + "-" + Date.now();
 };
@@ -15,11 +16,22 @@ export async function GET(req: Request, context: Context) {
   try {
     const { id } = await context.params;
     await connectDB();
+
+    // 1. Validasi Format ID MongoDB
+    if (!isValidObjectId(id)) {
+      return NextResponse.json({ message: "Format ID tidak valid" }, { status: 400 });
+    }
+
     const berita = await Berita.findById(id);
-    if (!berita) return NextResponse.json({ message: "Berita tidak ditemukan" }, { status: 404 });
+    
+    // 2. Cek Data
+    if (!berita) {
+      return NextResponse.json({ message: "Berita tidak ditemukan" }, { status: 404 });
+    }
+
     return NextResponse.json({ success: true, data: berita }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ success: false, message: "Error" }, { status: 500 });
+    return NextResponse.json({ success: false, message: "Error server" }, { status: 500 });
   }
 }
 
@@ -27,6 +39,11 @@ export async function PUT(req: Request, context: Context) {
   try {
     const { id } = await context.params;
     await connectDB();
+
+    // Validasi ID
+    if (!isValidObjectId(id)) {
+        return NextResponse.json({ message: "Format ID tidak valid" }, { status: 400 });
+    }
 
     const oldBerita = await Berita.findById(id);
     if (!oldBerita) return NextResponse.json({ message: "Not Found" }, { status: 404 });
@@ -37,28 +54,27 @@ export async function PUT(req: Request, context: Context) {
     const kategori = formData.get("kategori") as string;
     const status = formData.get("status") as string;
 
-    // Cek apakah judul berubah? Jika ya, update slug
+    // Cek update slug
     let slug = oldBerita.slug;
     if (judul !== oldBerita.judul) {
       slug = createSlug(judul);
     }
 
-    // Handle Thumbnail Baru
+    // Handle Thumbnail
     let thumbnailUrl = oldBerita.thumbnail;
     const file = formData.get("thumbnail") as File | null;
 
     if (file && file.size > 0) {
-      // Hapus lama
       if (oldBerita.thumbnail && oldBerita.thumbnail.startsWith("/uploads")) {
         try {
           await unlink(path.join(process.cwd(), "public", oldBerita.thumbnail));
         } catch (e) {}
       }
       
-      // Upload baru
       const bytes = await file.arrayBuffer();
       const filename = `blog-${Date.now()}-${file.name.replace(/\s+/g, "-").toLowerCase()}`;
       const uploadDir = path.join(process.cwd(), "public/uploads/berita");
+      // Note: Folder sudah pasti ada karena dibuat saat Upload Image
       await writeFile(path.join(uploadDir, filename), Buffer.from(bytes));
       thumbnailUrl = `/uploads/berita/${filename}`;
     }
@@ -81,10 +97,13 @@ export async function DELETE(req: Request, context: Context) {
     const { id } = await context.params;
     await connectDB();
 
+    if (!isValidObjectId(id)) {
+        return NextResponse.json({ message: "Format ID tidak valid" }, { status: 400 });
+    }
+
     const berita = await Berita.findById(id);
     if (!berita) return NextResponse.json({ message: "Not Found" }, { status: 404 });
 
-    // Hapus Gambar
     if (berita.thumbnail && berita.thumbnail.startsWith("/uploads")) {
       try {
         await unlink(path.join(process.cwd(), "public", berita.thumbnail));

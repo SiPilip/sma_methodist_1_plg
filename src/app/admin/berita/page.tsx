@@ -1,217 +1,200 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  HiMagnifyingGlass, 
-  HiFunnel, 
-  HiPlus, 
-  HiPencilSquare, 
-  HiTrash,
-  HiEye,
-  HiCalendarDays
-} from "react-icons/hi2";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { 
+  HiPlus, HiMagnifyingGlass, HiPencilSquare, HiTrash, HiChevronLeft, HiChevronRight,
+  HiNewspaper, HiDocumentText, HiEye
+} from "react-icons/hi2";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2"; 
+import { useDebounce } from "@/hooks/useDebounce";
 
-// 1. Tipe Data Dummy
-type Article = {
-  id: string;
-  title: string;
-  category: string;
-  author: string;
-  date: string;
+// Tipe Data
+type Berita = {
+  _id: string;
+  judul: string;
+  slug: string;
+  kategori: string;
+  thumbnail?: string;
   status: "Published" | "Draft";
   views: number;
-  image: string; // URL gambar dummy
+  createdAt: string;
 };
 
-// 2. Data Dummy
-const initialArticles: Article[] = [
-  {
-    id: "1",
-    title: "Perayaan Natal Sekolah 2025 Berlangsung Meriah",
-    category: "Kegiatan",
-    author: "Admin Utama",
-    date: "2025-12-25",
-    status: "Published",
-    views: 1240,
-    image: "/img/kegiatan-1.jpg" // Pastikan ada gambar dummy atau ganti link eksternal
-  },
-  {
-    id: "2",
-    title: "Prestasi Siswa: Juara 1 Olimpiade Matematika Nasional",
-    category: "Prestasi",
-    author: "Oliver Granli",
-    date: "2025-11-10",
-    status: "Published",
-    views: 856,
-    image: "/img/prestasi.jpg"
-  },
-  {
-    id: "3",
-    title: "Jadwal Ujian Akhir Semester Ganjil 2025/2026",
-    category: "Pengumuman",
-    author: "Bagian Kurikulum",
-    date: "2025-11-01",
-    status: "Draft", // Masih konsep
-    views: 0,
-    image: "/img/pengumuman.jpg"
-  },
-];
+type ApiResponse = {
+  success: boolean;
+  data: Berita[];
+  pagination: {
+    totalData: number;
+    totalPages: number;
+    currentPage: number;
+    limit: number;
+  };
+};
 
-export default function AdminBeritaPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("Semua");
-
-  // Logic Filter
-  const filteredData = initialArticles.filter((item) => {
-    const matchSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchStatus = filterStatus === "Semua" ? true : item.status === filterStatus;
-    return matchSearch && matchStatus;
+const fetchBerita = async (page: number, search: string, status: string) => {
+  // Kita bisa filter status lewat API (perlu sedikit modif di API jika ingin strict filter status, 
+  // tapi untuk sekarang kita filter di client atau asumsikan API mendukung filter 'q' umum)
+  // *Catatan: Agar sempurna, update API Berita GET untuk terima param 'status'.
+  // Tapi codingan API di atas belum ada filter status spesifik, mari kita tambahkan nanti jika perlu.
+  // Untuk saat ini kita pakai search query biasa.
+  
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: "10",
+    q: search,
   });
+  
+  const res = await fetch(`/api/berita?${params.toString()}`);
+  const json = await res.json();
+  return json as ApiResponse;
+};
+
+export default function BeritaPage() {
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  // Filter Tab di Frontend (sementara)
+  const [tabStatus, setTabStatus] = useState<"Published" | "Draft">("Published");
+  
+  const debouncedSearch = useDebounce(search, 500);
+
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["berita", page, debouncedSearch],
+    queryFn: () => fetchBerita(page, debouncedSearch, ""),
+  });
+
+  // Filter Data Sesuai Tab (Client Side Filter sementara)
+  const allBerita = response?.data || [];
+  const filteredBerita = allBerita.filter(b => b.status === tabStatus);
+  const pagination = response?.pagination;
+
+  // Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/berita/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Berita dihapus");
+      queryClient.invalidateQueries({ queryKey: ["berita"] });
+    }
+  });
+
+  const handleDelete = (id: string) => {
+    Swal.fire({
+      title: 'Hapus Berita?',
+      text: "Data tidak bisa dikembalikan.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Hapus',
+    }).then((result) => {
+      if (result.isConfirmed) deleteMutation.mutate(id);
+    });
+  };
 
   return (
     <div className="space-y-6">
-      
-      {/* --- HEADER --- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Berita & Artikel</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Kelola konten blog, pengumuman, dan update kegiatan sekolah.
-          </p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Artikel & Berita</h1>
+          <p className="text-sm text-gray-500">Kelola konten blog sekolah.</p>
         </div>
-        <Link 
-          href="/admin/berita/tambah" // Nanti kita buat halaman editornya
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
-        >
-          <HiPlus size={20} />
-          Tulis Berita
-        </Link>
-      </div>
-
-      {/* --- TOOLBAR --- */}
-      <div className="bg-white dark:bg-[#1a202c] p-4 rounded-xl border border-gray-200 dark:border-white/5 shadow-sm flex flex-col md:flex-row gap-4">
         
-        {/* Search */}
-        <div className="relative flex-1">
-          <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <input 
-            type="text" 
-            placeholder="Cari Judul Artikel..." 
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-white"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        {/* Filter Status */}
-        <div className="relative w-full md:w-48">
-          <HiFunnel className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <select 
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-white appearance-none cursor-pointer"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="Semua">Semua Status</option>
-            <option value="Published">Tayang (Published)</option>
-            <option value="Draft">Konsep (Draft)</option>
-          </select>
+        <div className="flex items-center gap-3">
+            <div className="relative w-full sm:w-64">
+               <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+               <input 
+                  type="text" 
+                  placeholder="Cari Judul..." 
+                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+               />
+            </div>
+            <Link href="/admin/berita/tambah" className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm shadow-lg whitespace-nowrap">
+                <HiPlus size={18} /> Tulis Berita
+            </Link>
         </div>
       </div>
 
-      {/* --- TABLE ARTIKEL --- */}
+      {/* TABS */}
+      <div className="border-b border-gray-200 dark:border-white/10">
+        <nav className="-mb-px flex gap-6">
+          <button onClick={() => setTabStatus("Published")} className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-all ${tabStatus === "Published" ? "border-green-500 text-green-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+            <HiNewspaper size={18} /> Tayang (Published)
+          </button>
+          <button onClick={() => setTabStatus("Draft")} className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-all ${tabStatus === "Draft" ? "border-orange-500 text-orange-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+            <HiDocumentText size={18} /> Konsep (Draft)
+          </button>
+        </nav>
+      </div>
+
+      {/* LIST BERITA */}
       <div className="bg-white dark:bg-[#1a202c] rounded-xl border border-gray-200 dark:border-white/5 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5">
-              <tr>
-                <th className="px-6 py-4 font-medium w-20">Cover</th>
-                <th className="px-6 py-4 font-medium">Judul & Kategori</th>
-                <th className="px-6 py-4 font-medium">Penulis</th>
-                <th className="px-6 py-4 font-medium">Tanggal</th>
-                <th className="px-6 py-4 font-medium">Status</th>
-                <th className="px-6 py-4 font-medium text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-              {filteredData.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
-                  
-                  {/* Thumbnail Gambar */}
-                  <td className="px-6 py-4">
-                    <div className="relative w-16 h-12 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
-                      {/* Placeholder warna jika gambar error/tidak ada */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-blue-50 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-xs text-gray-400">
-                         IMG
-                      </div>
-                      {/* Jika pakai Next Image, uncomment baris bawah ini dan pastikan src valid */}
-                      {/* <Image src={item.image} alt="Thumbnail" fill className="object-cover" /> */}
-                    </div>
-                  </td>
-
-                  {/* Judul & Kategori */}
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-gray-800 dark:text-white line-clamp-1 mb-1">
-                      {item.title}
-                    </div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 uppercase tracking-wide">
-                      {item.category}
-                    </span>
-                  </td>
-
-                  {/* Penulis */}
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
-                    {item.author}
-                  </td>
-
-                  {/* Tanggal */}
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-1.5">
-                        <HiCalendarDays size={14} />
-                        {item.date}
-                    </div>
-                  </td>
-
-                  {/* Status Badge */}
-                  <td className="px-6 py-4">
-                    <span className={`
-                      px-2.5 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 w-fit
-                      ${item.status === "Published" 
-                        ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800" 
-                        : "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800"}
-                    `}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${item.status === "Published" ? "bg-green-500" : "bg-yellow-500"}`}></span>
-                      {item.status}
-                    </span>
-                  </td>
-
-                  {/* Actions */}
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                       <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat Preview">
-                        <HiEye size={18} />
-                      </button>
-                      <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Berita">
-                        <HiPencilSquare size={18} />
-                      </button>
-                      <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
-                        <HiTrash size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          
-          {/* Empty State */}
-          {filteredData.length === 0 && (
-             <div className="p-8 text-center text-gray-500 dark:text-gray-400 italic">
-                Belum ada artikel yang sesuai filter.
-             </div>
-          )}
-        </div>
+         {isLoading ? (
+            <div className="p-10 text-center animate-pulse text-gray-500">Memuat berita...</div>
+         ) : (
+            <div className="overflow-x-auto">
+               <table className="w-full text-sm text-left">
+                  <thead className="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-white/5 border-b">
+                     <tr>
+                        <th className="px-6 py-4">Artikel</th>
+                        <th className="px-6 py-4">Kategori</th>
+                        <th className="px-6 py-4">Statistik</th>
+                        <th className="px-6 py-4">Tanggal</th>
+                        <th className="px-6 py-4 text-right">Aksi</th>
+                     </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                     {filteredBerita.length > 0 ? filteredBerita.map((item) => (
+                        <tr key={item._id} className="hover:bg-gray-50 dark:hover:bg-white/5">
+                           <td className="px-6 py-4">
+                              <div className="flex gap-3 items-center">
+                                 <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-gray-100 border">
+                                    {item.thumbnail ? (
+                                       <Image src={item.thumbnail} alt={item.judul} fill className="object-cover" />
+                                    ) : (
+                                       <div className="flex items-center justify-center h-full text-gray-300"><HiNewspaper size={20}/></div>
+                                    )}
+                                 </div>
+                                 <div>
+                                    <p className="font-bold text-gray-800 dark:text-white line-clamp-1 max-w-xs">{item.judul}</p>
+                                    <p className="text-xs text-gray-500">Slug: {item.slug}</p>
+                                 </div>
+                              </div>
+                           </td>
+                           <td className="px-6 py-4">
+                              <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold">{item.kategori}</span>
+                           </td>
+                           <td className="px-6 py-4 text-gray-500">
+                              <div className="flex items-center gap-1 text-xs font-bold">
+                                 <HiEye className="text-gray-400"/> {item.views} Views
+                              </div>
+                           </td>
+                           <td className="px-6 py-4 text-gray-500 text-xs">
+                              {new Date(item.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
+                           </td>
+                           <td className="px-6 py-4 text-right">
+                              <div className="flex justify-end gap-2">
+                                 <Link href={`/admin/berita/${item._id}`} className="p-2 text-gray-500 hover:text-blue-600 bg-gray-100 rounded-lg"><HiPencilSquare size={18}/></Link>
+                                 <button onClick={() => handleDelete(item._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><HiTrash size={18}/></button>
+                              </div>
+                           </td>
+                        </tr>
+                     )) : (
+                        <tr><td colSpan={5} className="text-center py-12 text-gray-500">Tidak ada berita {tabStatus === "Published" ? "tayang" : "draft"}.</td></tr>
+                     )}
+                  </tbody>
+               </table>
+            </div>
+         )}
       </div>
     </div>
   );
