@@ -1,5 +1,8 @@
+import TanstackProvider from "@/providers/TanstackProvider";
 import "./globals.css";
 import { Poppins } from "next/font/google";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -14,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={poppins.className}>
-        {children}
+        <TanstackProvider>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </TanstackProvider>
       </body>
     </html>
   );
