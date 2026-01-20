@@ -1,24 +1,28 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-// Sub-document untuk Riwayat Pendidikan
-interface IPendidikan {
-  institution: string;
-  degree: string;
-  year: string;
-}
+// Sub-schema untuk Pendidikan (agar rapi)
+const PendidikanSchema = new Schema({
+  jenjang: { type: String, required: true }, // S1, S2, D3
+  instansi: { type: String, required: true }, // Universitas Indonesia
+  tahun: { type: String, required: true },    // 2015
+}, { _id: false }); // Tidak butuh ID khusus untuk sub-dokumen ini
 
 export interface IGuru extends Document {
   nama: string;
-  nip: string;
-  jabatan?: string;
-  role: "Guru" | "Karyawan";
-  mapel?: string;
-  email?: string;
-  telepon?: string;
+  nip: string;          // Unik
+  jabatan: string;      // Kepala Sekolah, Guru Matpel, Staff TU
+  kategori: "Guru" | "Karyawan";
+  mataPelajaran?: string; // Opsional (hanya untuk Guru)
   bio?: string;
-  status: boolean;
   foto?: string;
-  pendidikan: IPendidikan[]; // Array Pendidikan
+  pendidikan: {
+    jenjang: string;
+    instansi: string;
+    tahun: string;
+  }[];
+  email?: string;
+  noHp?: string;
+  status: boolean;      // Aktif / Pensiun / Keluar
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,24 +31,24 @@ const GuruSchema = new Schema<IGuru>(
   {
     nama: { type: String, required: true },
     nip: { type: String, required: true, unique: true },
-    jabatan: { type: String },
-    role: { type: String, enum: ["Guru", "Karyawan"], default: "Guru" },
-    mapel: { type: String },
-    email: { type: String },
-    telepon: { type: String },
+    jabatan: { type: String, required: true },
+    kategori: { type: String, enum: ["Guru", "Karyawan"], required: true },
+    mataPelajaran: { type: String }, // Boleh kosong jika Karyawan
     bio: { type: String },
-    status: { type: Boolean, default: true },
     foto: { type: String },
-    pendidikan: [
-      {
-        institution: { type: String },
-        degree: { type: String },
-        year: { type: String },
-      },
-    ],
+    
+    // Array of Objects untuk Riwayat Pendidikan
+    pendidikan: [PendidikanSchema], 
+    
+    email: { type: String },
+    noHp: { type: String },
+    status: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
+
+// Indexing agar pencarian cepat
+GuruSchema.index({ nama: "text", nip: "text", jabatan: "text" });
 
 const Guru = mongoose.models.Guru || mongoose.model<IGuru>("Guru", GuruSchema);
 export default Guru;
