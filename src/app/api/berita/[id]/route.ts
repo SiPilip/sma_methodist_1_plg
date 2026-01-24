@@ -61,7 +61,7 @@ export async function PUT(req: Request, context: Context) {
     }
 
     // Handle Thumbnail
-    let thumbnailUrl = oldBerita.thumbnail;
+    let thumbnail = oldBerita.thumbnail;
     const file = formData.get("thumbnail") as File | null;
 
     if (file && file.size > 0) {
@@ -76,12 +76,12 @@ export async function PUT(req: Request, context: Context) {
       const uploadDir = path.join(process.cwd(), "public/uploads/berita");
       // Note: Folder sudah pasti ada karena dibuat saat Upload Image
       await writeFile(path.join(uploadDir, filename), Buffer.from(bytes));
-      thumbnailUrl = `/uploads/berita/${filename}`;
+      thumbnail = `/uploads/berita/${filename}`;
     }
 
     const updatedBerita = await Berita.findByIdAndUpdate(
       id,
-      { judul, slug, konten, kategori, status, thumbnail: thumbnailUrl },
+      { judul, slug, konten, kategori, status, thumbnail: thumbnail },
       { new: true }
     );
 

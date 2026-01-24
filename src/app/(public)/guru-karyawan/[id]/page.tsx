@@ -1,49 +1,55 @@
 import { Metadata, ResolvingMetadata } from "next";
+import { notFound } from "next/navigation";
 import GuruKaryawanDetail from "@/components/guru-karyawan/guru-karyawan-detail";
 import defaultProfilePicture from "@/../public/img/blank-profile-picture.webp";
+import { IGuru } from "@/models/Guru";
 
-// --- 1. SIMULASI FETCH DATA (Server Side) ---
-// Nanti diganti dengan: const res = await fetch(`api/guru/${id}`)
+// --- 1. REAL FETCH DATA (Server Side) ---
 async function getGuru(id: string) {
-  // Simulasi delay network
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/public/guru/${id}`, {
+    cache: "no-store", // Selalu ambil data terbaru
+  });
 
-  // Data Dummy (Simulasi database)
+  if (res.status === 404) {
+    notFound(); // Trigger halaman 404 jika ID tidak ditemukan
+  }
+
+  if (!res.ok) {
+    throw new Error("Gagal mengambil data guru");
+  }
+
+  const json = await res.json();
+  const rawGuru: IGuru = json.data;
+
+  // --- Transformasi Data dari API ke format yang diharapkan Frontend ---
+  const guruImage = rawGuru.foto ? `${baseUrl}${rawGuru.foto}` : `${baseUrl}${defaultProfilePicture.src}`;
+
   return {
-    id: id,
-    name: "Oliver Granli, S.Pd., M.M.",
-    nip: "19850101 201001 1 001",
-    category: "Guru" as const,
-    jobTitle: "Kepala Sekolah",
-    subject: "Matematika Lanjut",
-    
-    description: "Oliver Granli adalah seorang pendidik berdedikasi dengan pengalaman lebih dari 15 tahun.",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    
-    // Penting: Tetap gunakan object import untuk komponen Image Next.js
-    image: defaultProfilePicture, 
-    
-    email: "oliver.granli@sekolah.sch.id",
-    phone: "+62 812 3456 7890", // Data kontak publik guru (biasanya kantor)
-
-    education: [
-      {
-        degree: "Magister Manajemen Pendidikan (S2)",
-        institution: "Universitas Indonesia",
-        year: "2015",
-      },
-      {
-        degree: "Sarjana Pendidikan Matematika (S1)",
-        institution: "Universitas Negeri Jakarta",
-        year: "2008",
-      },
-    ],
-
-    socials: {
-      linkedin: "https://linkedin.com/in/olivergranli",
-      twitter: "https://twitter.com/olivergranli",
-    },
-    updatedAt: "2024-03-20",
+    id: rawGuru._id,
+    name: rawGuru.nama,
+    nip: rawGuru.nip,
+    category: rawGuru.kategori,
+    jobTitle: rawGuru.jabatan,
+    subject: rawGuru.mataPelajaran,
+    description:
+      rawGuru.bio?.substring(0, 155) ||
+      `Profil lengkap ${rawGuru.nama}, ${rawGuru.jabatan} di SMA Methodist 1 Palembang.`,
+    bio: rawGuru.bio,
+    // `image` untuk komponen, `imageUrl` untuk metadata
+    image: rawGuru.foto || defaultProfilePicture,
+    imageUrl: guruImage,
+    email: rawGuru.email,
+    phone: rawGuru.noHp,
+    education:
+      rawGuru.pendidikan?.map((edu) => ({
+        degree: edu.jenjang,
+        institution: edu.instansi,
+        year: edu.tahun,
+      })) || [],
+    socials: rawGuru.socials || {},
+    updatedAt: new Date(rawGuru.updatedAt).toISOString(),
   };
 }
 
@@ -52,22 +58,26 @@ type Props = {
 };
 
 // --- 2. DYNAMIC METADATA (SEO Core) ---
-// Mengenerate meta tag secara otomatis berdasarkan ID guru
+// Mengenerate meta tag secara otomatis berdasarkan data asli
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // Fetch data
   const data = await getGuru(params.id);
-  
-  // Base URL (Bisa dari environment variable)
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://sekolah-methodist-1.sch.id";
-  const pageUrl = `${baseUrl}/guru/${data.id}`;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://sekolah-methodist-1.sch.id";
+  const pageUrl = `${baseUrl}/guru-karyawan/${data.id}`;
 
   return {
-    title: `${data.name} - ${data.jobTitle} | SMA Methodist 1`,
+    title: `${data.name} - ${data.jobTitle} | SMA Methodist 1 Palembang`,
     description: data.description,
-    keywords: [data.name, data.jobTitle, data.subject || "", "Guru SMA Methodist 1", "Profil Pengajar"].join(", "),
+    keywords: [
+      data.name,
+      data.jobTitle,
+      data.subject || "",
+      "Guru SMA Methodist 1",
+      "Profil Pengajar",
+    ].join(", "),
     alternates: {
       canonical: pageUrl,
     },
@@ -75,15 +85,14 @@ export async function generateMetadata(
       type: "profile",
       username: data.id,
       firstName: data.name.split(" ")[0],
-      lastName: data.name.split(" ")[1] || "",
-      title: data.name,
+      lastName: data.name.split(" ").slice(1).join(" ") || "",
+      title: `${data.name} | ${data.jobTitle}`,
       description: data.description,
       url: pageUrl,
       siteName: "SMA Methodist 1 Palembang",
       images: [
         {
-          // Akses .src karena data.image adalah object StaticImageData
-          url: `${baseUrl}${data.image.src}`, 
+          url: data.imageUrl, // Menggunakan URL absolut yang sudah ditransformasi
           width: 800,
           height: 800,
           alt: `Foto Profil ${data.name}`,
@@ -100,7 +109,9 @@ export async function generateMetadata(
 // --- 3. PAGE COMPONENT ---
 export default async function GuruPage({ params }: Props) {
   const guruData = await getGuru(params.id);
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://sekolah-methodist-1.sch.id";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://smetsaplg.id";
+  const pageUrl = `${baseUrl}/guru-karyawan/${guruData.id}`;
 
   // --- JSON-LD (Structured Data) ---
   const jsonLd = {
@@ -108,9 +119,9 @@ export default async function GuruPage({ params }: Props) {
     "@type": "Person",
     name: guruData.name,
     jobTitle: guruData.jobTitle,
-    image: `${baseUrl}${guruData.image.src}`, // Pastikan URL absolut untuk Schema
+    image: guruData.imageUrl, // Pastikan URL absolut untuk Schema
     description: guruData.description,
-    url: `${baseUrl}/guru/${guruData.id}`,
+    url: pageUrl,
     email: guruData.email,
     telephone: guruData.phone,
     worksFor: {
@@ -123,8 +134,8 @@ export default async function GuruPage({ params }: Props) {
       name: edu.institution,
     })),
     sameAs: [
-      guruData.socials.linkedin, 
-      guruData.socials.twitter
+      guruData.socials.linkedin,
+      guruData.socials.twitter,
     ].filter(Boolean), // Hapus jika link kosong
   };
 
@@ -135,9 +146,8 @@ export default async function GuruPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
+
       {/* Render Component UI */}
-      {/* Pastikan GuruKaryawanDetail menerima prop 'data' yang sesuai */}
       <GuruKaryawanDetail data={guruData} />
     </>
   );

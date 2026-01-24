@@ -38,7 +38,7 @@ export default function GuruKaryawanDetail({ data }: GuruDetailProps) {
         
         {/* BREADCRUMB */}
         <div className="mb-6 text-sm text-gray-500 dark:text-gray-300">
-          <Link href="/guru" className="hover:underline hover:text-blue-600">Daftar Guru & Staff</Link> 
+          <Link href="/guru-karyawan" className="hover:underline hover:text-blue-600">Daftar Guru & Staff</Link> 
           <span className="mx-2">/</span>
           <span className="font-semibold text-blue-950 dark:text-white">{data.name}</span>
         </div>

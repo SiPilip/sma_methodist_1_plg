@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     const slug = createSlug(judul);
 
     // Handle Thumbnail
-    let thumbnailUrl = "";
+    let thumbnail = "";
     const file = formData.get("thumbnail") as File | null;
     
     if (file && file.size > 0) {
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
       const filePath = path.join(uploadDir, filename);
 
       await writeFile(filePath, buffer);
-      thumbnailUrl = `/uploads/berita/${filename}`;
+      thumbnail = `/uploads/berita/${filename}`;
     }
 
     const newBerita = await Berita.create({
@@ -95,7 +95,7 @@ export async function POST(req: Request) {
       konten,
       kategori,
       status,
-      thumbnail: thumbnailUrl,
+      thumbnail: thumbnail,
       penulis: "Admin", // Hardcode dulu, nanti ambil dari auth
       views: 0
     });

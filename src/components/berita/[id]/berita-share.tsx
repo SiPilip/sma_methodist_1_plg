@@ -15,13 +15,17 @@ import {
 } from "next-share";
 import { useState } from "react";
 
-export default function BeritaShare() {
+interface ShareProps {
+  title: string;
+  description: string; // Bisa diambil dari slice konten
+}
+
+export default function BeritaShare({ title, description }: ShareProps) {
   const [showShareMenu, setShowShareMenu] = useState(false);
 
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-  const title = "KEGIATAN FIELD TRIP KELAS IX MENGUNJUNGI MUSEUM SCIENCE";
-  const description =
-    "Lorem ipsum dolor sit amet consectetur. Nisl purus leo eu augue. Orci viverra facilisi etiam id pretium eu quis.";
+
+  const cleanDesc = description.replace(/<[^>]+>/g, "").substring(0, 100);
 
   return (
     <div className="flex justify-start mb-5 relative">
@@ -55,7 +59,7 @@ export default function BeritaShare() {
             <LinkedinShareButton
               url={shareUrl}
               title={title}
-              summary={description}
+              summary={cleanDesc}
             >
               <LinkedinIcon size={40} round />
             </LinkedinShareButton>

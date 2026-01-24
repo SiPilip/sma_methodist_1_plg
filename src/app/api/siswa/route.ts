@@ -3,6 +3,8 @@ import connectDB from "@/lib/db";
 import Siswa from "@/models/Siswa";
 import { writeFile } from "fs/promises";
 import path from "path";
+import { getCurrentUser } from "@/lib/auth";
+import { createLog } from "@/lib/logger";
 
 // Helper: Hitung Tahun Ajaran Saat Ini
 const getCurrentSchoolYear = () => {
@@ -81,6 +83,12 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     await connectDB();
+
+    const user = await getCurrentUser();
+    // Jika User bukan SuperAdmin DAN bukan Editor (Berarti dia Osis), tolak.
+    if (!user || (user.role !== "SuperAdmin" && user.role !== "Editor")) {
+      return NextResponse.json({ message: "Akses ditolak. Peran Anda tidak diizinkan." }, { status: 403 });
+    }
 
     // 1. Ambil data sebagai FormData (Bukan JSON lagi)
     const formData = await req.formData();
@@ -166,6 +174,16 @@ export async function POST(req: Request) {
       foto: fotoUrl, // URL path lokal (/uploads/siswa/...)
       status: true
     });
+
+    if (user) { // user didapat dari getCurrentUser()
+      await createLog({
+        userId: user.userId, // Dari token
+        namaUser: user.nama,
+        action: "CREATE",
+        target: "Siswa",
+        details: `Menambahkan siswa baru: ${newSiswa.nama} (${newSiswa.nisn})`
+      });
+    }
 
     return NextResponse.json({ success: true, message: "Berhasil!", data: newSiswa }, { status: 201 });
 

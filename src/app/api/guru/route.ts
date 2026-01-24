@@ -3,6 +3,8 @@ import connectDB from "@/lib/db";
 import Guru from "@/models/Guru";
 import { writeFile } from "fs/promises";
 import path from "path";
+import { getCurrentUser } from "@/lib/auth";
+import { createLog } from "@/lib/logger";
 
 // --- GET: List Guru dengan Pagination & Search ---
 export async function GET(req: Request) {
@@ -58,6 +60,12 @@ export async function GET(req: Request) {
 
 // --- POST: Tambah Guru Baru (Multipart Form Data) ---
 export async function POST(req: Request) {
+  const user = await getCurrentUser();
+    // Jika User bukan SuperAdmin DAN bukan Editor (Berarti dia Osis), tolak.
+  if (!user || (user.role !== "SuperAdmin" && user.role !== "Editor")) {
+    return NextResponse.json({ message: "Akses ditolak. Peran Anda tidak diizinkan." }, { status: 403 });
+  }
+  
   try {
     await connectDB();
     
@@ -136,6 +144,16 @@ export async function POST(req: Request) {
       nama, nip, jabatan, kategori, mataPelajaran, bio, email, noHp,
       pendidikan, foto: fotoUrl, status: true
     });
+
+    if (user) { 
+      await createLog({
+        userId: user.userId, 
+        namaUser: user.nama,
+        action: "CREATE",
+        target: "Guru",
+        details: `Menambah Guru: ${newGuru.nama} (${newGuru.nip})`
+      });
+    }
 
     return NextResponse.json({ success: true, message: "Berhasil menambahkan data!", data: newGuru }, { status: 201 });
 

@@ -4,6 +4,8 @@ import Siswa from "@/models/Siswa";
 import { writeFile, unlink } from "fs/promises";
 import path from "path";
 import { isValidObjectId } from "mongoose"; // Import Validasi
+import { getCurrentUser } from "@/lib/auth";
+import { createLog } from "@/lib/logger";
 
 type Context = {
   params: Promise<{ id: string }>
@@ -29,6 +31,12 @@ export async function GET(req: Request, context: Context) {
 
 // PUT
 export async function PUT(req: Request, context: Context) {
+  const user = await getCurrentUser();
+    // Jika User bukan SuperAdmin DAN bukan Editor (Berarti dia Osis), tolak.
+    if (!user || (user.role !== "SuperAdmin" && user.role !== "Editor")) {
+      return NextResponse.json({ message: "Akses ditolak. Peran Anda tidak diizinkan." }, { status: 403 });
+    }
+  
   try {
     const { id } = await context.params;
     await connectDB();
@@ -85,6 +93,16 @@ export async function PUT(req: Request, context: Context) {
       { new: true }
     );
 
+    if (user) { // user didapat dari getCurrentUser()
+      await createLog({
+        userId: user.userId, // Dari token
+        namaUser: user.nama,
+        action: "UPDATE",
+        target: "Siswa",
+        details: `Mengubah siswa: ${updatedSiswa.nama} (${updatedSiswa.nisn})`
+      });
+    }
+
     return NextResponse.json({ success: true, message: "Data berhasil diperbarui", data: updatedSiswa }, { status: 200 });
 
   } catch (error: any) {
@@ -94,6 +112,12 @@ export async function PUT(req: Request, context: Context) {
 
 // DELETE
 export async function DELETE(req: Request, context: Context) {
+  const user = await getCurrentUser();
+    // Jika User bukan SuperAdmin DAN bukan Editor (Berarti dia Osis), tolak.
+    if (!user || (user.role !== "SuperAdmin" && user.role !== "Editor")) {
+      return NextResponse.json({ message: "Akses ditolak. Peran Anda tidak diizinkan." }, { status: 403 });
+    }
+  
   try {
     const { id } = await context.params;
     await connectDB();
@@ -110,6 +134,16 @@ export async function DELETE(req: Request, context: Context) {
         const filePath = path.join(process.cwd(), "public", siswa.foto);
         await unlink(filePath);
       } catch (err) {}
+    }
+
+    if (user) { // user didapat dari getCurrentUser()
+      await createLog({
+        userId: user.userId, // Dari token
+        namaUser: user.nama,
+        action: "DELETE",
+        target: "Siswa",
+        details: `Menghapus siswa: ${siswa.nama} (${siswa.nisn})`
+      });
     }
 
     await Siswa.findByIdAndDelete(id);

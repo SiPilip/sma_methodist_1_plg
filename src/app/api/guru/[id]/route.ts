@@ -4,6 +4,8 @@ import Guru from "@/models/Guru";
 import { writeFile, unlink } from "fs/promises";
 import path from "path";
 import { isValidObjectId } from "mongoose"; // Import Validasi
+import { getCurrentUser } from "@/lib/auth";
+import { createLog } from "@/lib/logger";
 
 type Context = {
   params: Promise<{ id: string }>
@@ -33,6 +35,12 @@ export async function GET(req: Request, context: Context) {
 
 // PUT: Update Guru
 export async function PUT(req: Request, context: Context) {
+  const user = await getCurrentUser();
+    // Jika User bukan SuperAdmin DAN bukan Editor (Berarti dia Osis), tolak.
+  if (!user || (user.role !== "SuperAdmin" && user.role !== "Editor")) {
+    return NextResponse.json({ message: "Akses ditolak. Peran Anda tidak diizinkan." }, { status: 403 });
+  }
+  
   try {
     const { id } = await context.params;
     await connectDB();
@@ -98,6 +106,16 @@ export async function PUT(req: Request, context: Context) {
       { new: true }
     );
 
+    if (user) { 
+      await createLog({
+        userId: user.userId, 
+        namaUser: user.nama,
+        action: "UPDATE",
+        target: "Guru",
+        details: `Mengubah Guru: ${updatedGuru.nama} (${updatedGuru.nip})`
+      });
+    }
+
     return NextResponse.json({ success: true, message: "Data berhasil diperbarui", data: updatedGuru }, { status: 200 });
 
   } catch (error: any) {
@@ -107,6 +125,12 @@ export async function PUT(req: Request, context: Context) {
 
 // DELETE: Hapus Guru
 export async function DELETE(req: Request, context: Context) {
+  const user = await getCurrentUser();
+    // Jika User bukan SuperAdmin DAN bukan Editor (Berarti dia Osis), tolak.
+  if (!user || (user.role !== "SuperAdmin" && user.role !== "Editor")) {
+    return NextResponse.json({ message: "Akses ditolak. Peran Anda tidak diizinkan." }, { status: 403 });
+  }
+  
   try {
     const { id } = await context.params;
     await connectDB();
@@ -125,8 +149,19 @@ export async function DELETE(req: Request, context: Context) {
         await unlink(filePath);
       } catch (err) {}
     }
-
+    
+    if (user) { 
+      await createLog({
+        userId: user.userId, 
+        namaUser: user.nama,
+        action: "DELETE",
+        target: "Guru",
+        details: `Menghapus Guru: ${guru.nama} (${guru.nip})`
+      });
+    }
+    
     await Guru.findByIdAndDelete(id);
+
 
     return NextResponse.json({ success: true, message: "Data berhasil dihapus" }, { status: 200 });
   } catch (error) {

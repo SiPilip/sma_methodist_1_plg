@@ -3,8 +3,16 @@ import connectDB from "@/lib/db";
 import Siswa from "@/models/Siswa";
 import { unlink } from "fs/promises";
 import path from "path";
+import { getCurrentUser } from "@/lib/auth";
+import { createLog } from "@/lib/logger";
 
 export async function POST(req: Request) {
+  const user = await getCurrentUser();
+    // Jika User bukan SuperAdmin DAN bukan Editor (Berarti dia Osis), tolak.
+    if (!user || (user.role !== "SuperAdmin" && user.role !== "Editor")) {
+      return NextResponse.json({ message: "Akses ditolak. Peran Anda tidak diizinkan." }, { status: 403 });
+    }
+  
   try {
     await connectDB();
     const { ids } = await req.json();
@@ -14,7 +22,17 @@ export async function POST(req: Request) {
     }
 
     // 1. Ambil data siswa yang akan dihapus untuk mendapatkan nama file fotonya
-    const studentsToDelete = await Siswa.find({ _id: { $in: ids } });
+    const studentsToDelete: any = await Siswa.find({ _id: { $in: ids } });
+
+    if (user) { // user didapat dari getCurrentUser()
+      await createLog({
+        userId: user.userId, // Dari token
+        namaUser: user.nama,
+        action: "CREATE",
+        target: "Siswa",
+        details: `Menghapus siswa: ${studentsToDelete.nama} (${studentsToDelete.nisn})`
+      });
+    }
 
     // 2. Loop dan hapus file fisik jika ada
     for (const siswa of studentsToDelete) {

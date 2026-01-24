@@ -1,216 +1,224 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  HiMagnifyingGlass, 
-  HiFunnel, 
-  HiPlus, 
-  HiTrash,
-  HiDocumentText, 
-  HiArrowDownTray,
-  HiDocument,
-} from "react-icons/hi2";
-import { BsFileEarmarkPdfFill, BsFileEarmarkWordFill, BsFileEarmarkExcelFill } from "react-icons/bs";
 import Link from "next/link";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { 
+  HiPlus, HiMagnifyingGlass, HiTrash, HiChevronLeft, HiChevronRight, 
+  HiDocumentText, HiArrowDownTray, HiFolder
+} from "react-icons/hi2";
+import { BsFileEarmarkPdfFill, BsFileEarmarkWordFill, BsFileEarmarkExcelFill, BsFileEarmarkImageFill, BsFileEarmarkFill } from "react-icons/bs"; // Install react-icons jika belum ada ikon Bs*
+import toast from "react-hot-toast";
+import Swal from "sweetalert2"; 
+import { useDebounce } from "@/hooks/useDebounce";
 
-// 1. Tipe Data Dummy
-type DocumentItem = {
-  id: string;
-  name: string;
-  category: "SK" | "Akademik" | "Lainnya";
-  type: "pdf" | "docx" | "xlsx";
-  size: string;
-  date: string;
-  downloads: number;
+// Tipe Data
+type Dokumen = {
+  _id: string;
+  judul: string;
+  deskripsi?: string;
+  fileUrl: string;
+  kategori: string;
+  tipeFile: string;
+  ukuranFile: string;
+  downloadCount: number;
+  createdAt: string;
 };
 
-// 2. Data Dummy
-const initialDocs: DocumentItem[] = [
-  {
-    id: "1",
-    name: "Kalender Akademik 2025-2026.pdf",
-    category: "Akademik",
-    type: "pdf",
-    size: "2.4 MB",
-    date: "2025-07-15",
-    downloads: 450
-  },
-  {
-    id: "2",
-    name: "SK Pengangkatan Guru Honorer 2025.pdf",
-    category: "SK",
-    type: "pdf",
-    size: "1.1 MB",
-    date: "2025-01-10",
-    downloads: 12
-  },
-  {
-    id: "3",
-    name: "Format RPP Kurikulum Merdeka.docx",
-    category: "Akademik",
-    type: "docx",
-    size: "540 KB",
-    date: "2025-02-20",
-    downloads: 89
-  },
-  {
-    id: "4",
-    name: "Laporan Keuangan Ekstrakurikuler.xlsx",
-    category: "Lainnya",
-    type: "xlsx",
-    size: "890 KB",
-    date: "2025-11-05",
-    downloads: 5
-  },
-];
+type ApiResponse = {
+  success: boolean;
+  data: Dokumen[];
+  pagination: {
+    totalData: number;
+    totalPages: number;
+    currentPage: number;
+    limit: number;
+  };
+};
 
-export default function AdminDokumenPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState("Semua");
+const fetchDokumen = async (page: number, search: string, kategori: string) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: "10",
+    q: search,
+    kategori: kategori,
+  });
+  
+  const res = await fetch(`/api/dokumen?${params.toString()}`);
+  return await res.json() as ApiResponse;
+};
 
-  // Logic Filter
-  const filteredData = initialDocs.filter((item) => {
-    const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchCat = filterCategory === "Semua" ? true : item.category === filterCategory;
-    return matchSearch && matchCat;
+// Helper: Pilih Ikon Berdasarkan Tipe File
+const getFileIcon = (type: string) => {
+  const t = type.toLowerCase();
+  if (t.includes("pdf")) return <BsFileEarmarkPdfFill className="text-red-500 text-3xl" />;
+  if (t.includes("doc") || t.includes("word")) return <BsFileEarmarkWordFill className="text-blue-500 text-3xl" />;
+  if (t.includes("xls") || t.includes("sheet")) return <BsFileEarmarkExcelFill className="text-green-500 text-3xl" />;
+  if (t.includes("jpg") || t.includes("png")) return <BsFileEarmarkImageFill className="text-purple-500 text-3xl" />;
+  return <BsFileEarmarkFill className="text-gray-400 text-3xl" />;
+};
+
+export default function DokumenPage() {
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [kategoriFilter, setKategoriFilter] = useState("Semua");
+  
+  const debouncedSearch = useDebounce(search, 500);
+
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["dokumen", page, debouncedSearch, kategoriFilter],
+    queryFn: () => fetchDokumen(page, debouncedSearch, kategoriFilter),
   });
 
-  // Helper untuk Icon File
-  const getFileIcon = (type: string) => {
-    switch (type) {
-      case "pdf": return <BsFileEarmarkPdfFill className="text-red-500" size={24} />;
-      case "docx": return <BsFileEarmarkWordFill className="text-blue-500" size={24} />;
-      case "xlsx": return <BsFileEarmarkExcelFill className="text-green-500" size={24} />;
-      default: return <HiDocument className="text-gray-400" size={24} />;
+  const dataDokumen = response?.data || [];
+  const pagination = response?.pagination;
+
+  // Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/dokumen/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Gagal hapus");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("File dihapus permanen");
+      queryClient.invalidateQueries({ queryKey: ["dokumen"] });
     }
+  });
+
+  const handleDelete = (id: string) => {
+    Swal.fire({
+      title: 'Hapus File?',
+      text: "File fisik di server juga akan dihapus.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Ya, Hapus',
+    }).then((result) => {
+      if (result.isConfirmed) deleteMutation.mutate(id);
+    });
   };
 
   return (
     <div className="space-y-6">
       
-      {/* --- HEADER --- */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Arsip Dokumen</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Upload dan kelola dokumen digital (SK, Jadwal, SOP) untuk didownload.
-          </p>
+          <p className="text-sm text-gray-500">Kelola file download (SK, Jadwal, Formulir).</p>
         </div>
-        <Link 
-          href="/admin/dokumen/tambah" // Nanti kita buat halaman editornya
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
-        >
-          <HiPlus size={20} />
-          Tambah Dokumen
-        </Link>
-      </div>
-
-      {/* --- TOOLBAR --- */}
-      <div className="bg-white dark:bg-[#1a202c] p-4 rounded-xl border border-gray-200 dark:border-white/5 shadow-sm flex flex-col md:flex-row gap-4">
         
-        {/* Search */}
-        <div className="relative flex-1">
-          <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <input 
-            type="text" 
-            placeholder="Cari Nama File..." 
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-white"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        {/* Filter Kategori */}
-        <div className="relative w-full md:w-48">
-          <HiFunnel className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <select 
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-white appearance-none cursor-pointer"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="Semua">Semua Kategori</option>
-            <option value="SK">SK & Surat</option>
-            <option value="Akademik">Akademik</option>
-            <option value="Lainnya">Lainnya</option>
-          </select>
+        <div className="flex items-center gap-3">
+            <div className="relative w-full sm:w-64">
+               <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+               <input 
+                  type="text" 
+                  placeholder="Cari Dokumen..." 
+                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+               />
+            </div>
+            <Link href="/admin/dokumen/tambah" className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm shadow-lg whitespace-nowrap">
+                <HiPlus size={18} /> Upload File
+            </Link>
         </div>
       </div>
 
-      {/* --- TABLE DOKUMEN --- */}
+      {/* Tabs Kategori */}
+      <div className="border-b border-gray-200 dark:border-white/10 overflow-x-auto">
+        <nav className="-mb-px flex gap-6 min-w-max">
+          {["Semua", "Akademik", "Surat Keputusan", "Formulir", "Lainnya"].map((kat) => (
+            <button
+              key={kat}
+              onClick={() => { setKategoriFilter(kat); setPage(1); }}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-all whitespace-nowrap ${kategoriFilter === kat ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+            >
+              {kat}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Tabel File */}
       <div className="bg-white dark:bg-[#1a202c] rounded-xl border border-gray-200 dark:border-white/5 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5">
-              <tr>
-                <th className="px-6 py-4 font-medium">Nama File</th>
-                <th className="px-6 py-4 font-medium">Kategori</th>
-                <th className="px-6 py-4 font-medium">Ukuran</th>
-                <th className="px-6 py-4 font-medium">Tanggal Upload</th>
-                <th className="px-6 py-4 font-medium">Diunduh</th>
-                <th className="px-6 py-4 font-medium text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-              {filteredData.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
-                  
-                  {/* Nama File & Icon */}
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="shrink-0 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
-                        {getFileIcon(item.type)}
-                      </div>
-                      <div className="font-medium text-gray-800 dark:text-white line-clamp-1">
-                        {item.name}
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Kategori Badge */}
-                  <td className="px-6 py-4">
-                    <span className="px-2.5 py-1 rounded-md bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 text-xs font-semibold border border-gray-200 dark:border-gray-600">
-                      {item.category}
-                    </span>
-                  </td>
-
-                  {/* Ukuran */}
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">
-                    {item.size}
-                  </td>
-
-                  {/* Tanggal */}
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
-                    {item.date}
-                  </td>
-
-                  {/* Statistik Download */}
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
-                    {item.downloads}x
-                  </td>
-
-                  {/* Actions */}
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Download">
-                        <HiArrowDownTray size={18} />
-                      </button>
-                      <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus File">
-                        <HiTrash size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          
-          {/* Empty State */}
-          {filteredData.length === 0 && (
-             <div className="p-8 text-center text-gray-500 dark:text-gray-400 italic">
-                Tidak ada dokumen yang ditemukan.
-             </div>
-          )}
-        </div>
+        {isLoading ? (
+           <div className="p-10 text-center animate-pulse text-gray-500">Memuat file...</div>
+        ) : (
+           <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                 <thead className="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-white/5 border-b">
+                    <tr>
+                       <th className="px-6 py-4">Nama File</th>
+                       <th className="px-6 py-4">Kategori</th>
+                       <th className="px-6 py-4">Info File</th>
+                       <th className="px-6 py-4">Download</th>
+                       <th className="px-6 py-4 text-right">Aksi</th>
+                    </tr>
+                 </thead>
+                 <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                    {dataDokumen.length > 0 ? dataDokumen.map((doc) => (
+                       <tr key={doc._id} className="hover:bg-gray-50 dark:hover:bg-white/5">
+                          <td className="px-6 py-4">
+                             <div className="flex gap-4 items-start">
+                                <div className="shrink-0 pt-1">{getFileIcon(doc.tipeFile)}</div>
+                                <div>
+                                   <p className="font-bold text-gray-800 dark:text-white text-base">{doc.judul}</p>
+                                   <p className="text-xs text-gray-500 mt-1 line-clamp-1">{doc.deskripsi || "Tidak ada deskripsi"}</p>
+                                </div>
+                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                             <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-bold border">{doc.kategori}</span>
+                          </td>
+                          <td className="px-6 py-4 text-gray-500">
+                             <div className="flex flex-col text-xs">
+                                <span className="font-mono font-bold">{doc.tipeFile}</span>
+                                <span>{doc.ukuranFile}</span>
+                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                             <div className="flex items-center gap-1 text-gray-500 text-xs">
+                                <HiArrowDownTray className="text-green-500"/> {doc.downloadCount}x Unduh
+                             </div>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                             <div className="flex justify-end gap-2">
+                                <a 
+                                  href={doc.fileUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg border border-transparent hover:border-blue-200"
+                                  title="Download / Preview"
+                                >
+                                  <HiArrowDownTray size={18}/>
+                                </a>
+                                <button onClick={() => handleDelete(doc._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-transparent hover:border-red-200">
+                                  <HiTrash size={18}/>
+                                </button>
+                             </div>
+                          </td>
+                       </tr>
+                    )) : (
+                       <tr><td colSpan={5} className="text-center py-12 text-gray-500 flex flex-col items-center gap-2"><HiFolder size={40} className="text-gray-300"/> Belum ada dokumen.</td></tr>
+                    )}
+                 </tbody>
+              </table>
+           </div>
+        )}
+        
+        {/* Pagination Sederhana */}
+        {pagination && pagination.totalPages > 1 && (
+           <div className="px-6 py-4 border-t flex justify-between items-center text-xs text-gray-500">
+              <span>Hal {pagination.currentPage} dari {pagination.totalPages}</span>
+              <div className="flex gap-2">
+                 <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="p-2 border rounded hover:bg-white disabled:opacity-50"><HiChevronLeft/></button>
+                 <button onClick={() => setPage(p => Math.min(pagination.totalPages, p+1))} disabled={page===pagination.totalPages} className="p-2 border rounded hover:bg-white disabled:opacity-50"><HiChevronRight/></button>
+              </div>
+           </div>
+        )}
       </div>
     </div>
   );

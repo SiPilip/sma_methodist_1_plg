@@ -1,28 +1,32 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IDokumen extends Document {
-  name: string;
-  category: string;
-  description?: string;
-  fileUrl: string; // Link ke file asli
-  fileType: string; // pdf, docx, dll
-  size: number; // Dalam bytes
-  downloads: number;
+  judul: string;
+  deskripsi?: string;
+  fileUrl: string;       // Path file: /uploads/dokumen/jadwal.pdf
+  kategori: string;      // Akademik, Surat, Formulir
+  tipeFile: string;      // pdf, docx, xlsx
+  ukuranFile: string;    // "2.5 MB"
+  downloadCount: number; // Statistik berapa kali didownload
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const DokumenSchema = new Schema<IDokumen>(
   {
-    name: { type: String, required: true },
-    category: { type: String, required: true },
-    description: { type: String },
+    judul: { type: String, required: true },
+    deskripsi: { type: String },
     fileUrl: { type: String, required: true },
-    fileType: { type: String },
-    size: { type: Number },
-    downloads: { type: Number, default: 0 },
+    kategori: { type: String, default: "Umum" },
+    tipeFile: { type: String, required: true },
+    ukuranFile: { type: String, required: true },
+    downloadCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
+
+// Index untuk pencarian cepat
+DokumenSchema.index({ judul: "text", deskripsi: "text" });
 
 const Dokumen = mongoose.models.Dokumen || mongoose.model<IDokumen>("Dokumen", DokumenSchema);
 export default Dokumen;
