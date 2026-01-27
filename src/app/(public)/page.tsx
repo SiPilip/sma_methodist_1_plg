@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SMA Methodist 1 Palembang",
     description: "Mewujudkan generasi unggul, beriman, dan berprestasi.",
-    url: "https://smetsaplg.id", // Ganti dengan domain asli nanti
+    url: process.env.NEXT_PUBLIC_URL || "http://localhost:3000", // Ganti dengan domain asli nanti
     siteName: "SMA Methodist 1 Palembang",
     images: [
       {

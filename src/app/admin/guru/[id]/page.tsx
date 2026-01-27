@@ -41,6 +41,8 @@ export default function EditGuruPage({ params }: { params: Promise<{ id: string 
 
   // State Dinamis
   const [pendidikanList, setPendidikanList] = useState<PendidikanState[]>([]);
+  const [waliKelas, setWaliKelas] = useState({ angkatan: "", jurusan: "", rombel: "" });
+
 
   // Query Data
   const { data: guru, isLoading, isError } = useQuery({
@@ -53,10 +55,25 @@ export default function EditGuruPage({ params }: { params: Promise<{ id: string 
   useEffect(() => {
     if (guru) {
       if (guru.foto) setImagePreview(guru.foto);
-      // Jika pendidikan kosong, beri array kosong agar tidak error
       setPendidikanList(guru.pendidikan && guru.pendidikan.length > 0 ? guru.pendidikan : [{ jenjang: "", instansi: "", tahun: "" }]);
+      if (guru.waliUntukKelas) {
+        setWaliKelas({
+          angkatan: String(guru.waliUntukKelas.angkatan || ""),
+          jurusan: guru.waliUntukKelas.jurusan || "",
+          rombel: guru.waliUntukKelas.rombel || "",
+        });
+      }
     }
   }, [guru]);
+
+  // --- LOGIC WALI KELAS ---
+  const handleWaliKelasChange = (field: keyof typeof waliKelas, value: string) => {
+    setWaliKelas(prev => ({ ...prev, [field]: value }));
+  };
+  const clearWaliKelas = () => {
+    setWaliKelas({ angkatan: "", jurusan: "", rombel: "" });
+    toast.success("Penetapan wali kelas dihapus. Klik 'Simpan' untuk konfirmasi.");
+  };
 
   // --- LOGIC PENDIDIKAN ---
   const addPendidikan = () => {
@@ -130,6 +147,17 @@ export default function EditGuruPage({ params }: { params: Promise<{ id: string 
     const validPendidikan = pendidikanList.filter(p => p.instansi && p.tahun);
     payload.append("pendidikan", JSON.stringify(validPendidikan));
 
+    // Append Wali Kelas
+    // Hanya kirim jika semua field terisi
+    if (waliKelas.angkatan && waliKelas.jurusan && waliKelas.rombel) {
+      payload.append("waliUntukKelas", JSON.stringify({
+        ...waliKelas,
+        angkatan: Number(waliKelas.angkatan)
+      }));
+    } else {
+      payload.append("waliUntukKelas", ""); // Kirim string kosong untuk di-unset di backend
+    }
+
     // Append Foto Baru (Jika ada)
     if (selectedFile) {
       payload.append("foto", selectedFile);
@@ -183,9 +211,11 @@ export default function EditGuruPage({ params }: { params: Promise<{ id: string 
   // Loading State
   if (isLoading) return <div className="p-10 text-center animate-pulse">Memuat data...</div>;
 
-  // Styles
+  // Styles & Constants
   const labelStyle = "block text-xs font-bold text-gray-500 uppercase mb-1.5 tracking-wide";
   const inputStyle = "w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-950 text-sm transition-all";
+  const angkatanOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+
 
   return (
     <div className="space-y-6 pb-10">
@@ -312,6 +342,43 @@ export default function EditGuruPage({ params }: { params: Promise<{ id: string 
                       <HiPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
                       <input type="text" name="noHp" defaultValue={guru.noHp} className={`${inputStyle} pl-10`} />
                    </div>
+                </div>
+             </div>
+          </div>
+
+          {/* WALI KELAS */}
+          <div className="bg-white dark:bg-[#1a202c] rounded-xl border border-gray-200 dark:border-white/5 shadow-sm overflow-hidden">
+             <div className="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                   <div className="p-2 bg-green-50 dark:bg-white/10 rounded-lg text-green-600"><HiBriefcase size={20}/></div>
+                   <h3 className="font-bold text-gray-800 dark:text-white">Penugasan Wali Kelas</h3>
+                </div>
+                <button type="button" onClick={clearWaliKelas} className="text-xs bg-red-50 text-red-600 px-3 py-1.5 rounded-lg font-bold hover:bg-red-100 flex items-center gap-1 transition-colors">
+                   <HiTrash/> Hapus Penetapan
+                </button>
+             </div>
+             <div className="p-6">
+                <p className="text-xs text-gray-400 mb-4 -mt-2">Jika guru ini adalah wali kelas, tentukan kelas yang diampu. Biarkan kosong jika bukan.</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label className={labelStyle}>Angkatan</label>
+                        <select value={waliKelas.angkatan} onChange={(e) => handleWaliKelasChange("angkatan", e.target.value)} className={inputStyle}>
+                            <option value="">-- Pilih --</option>
+                            {angkatanOptions.map(year => <option key={year} value={year}>{year}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label className={labelStyle}>Jurusan</label>
+                        <select value={waliKelas.jurusan} onChange={(e) => handleWaliKelasChange("jurusan", e.target.value)} className={inputStyle}>
+                            <option value="">-- Pilih --</option>
+                            <option value="MIPA">MIPA</option>
+                            <option value="IPS">IPS</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className={labelStyle}>Rombel</label>
+                        <input type="text" value={waliKelas.rombel} onChange={(e) => handleWaliKelasChange("rombel", e.target.value)} placeholder="Contoh: 1, 2, atau A" className={inputStyle} />
+                    </div>
                 </div>
              </div>
           </div>

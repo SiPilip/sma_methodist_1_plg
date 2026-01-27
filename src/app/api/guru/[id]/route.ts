@@ -54,57 +54,68 @@ export async function PUT(req: Request, context: Context) {
 
     const formData = await req.formData();
 
-    // Ambil Data Text
-    const nama = formData.get("nama");
-    const nip = formData.get("nip");
-    const jabatan = formData.get("jabatan");
-    const kategori = formData.get("kategori");
-    const mataPelajaran = formData.get("mataPelajaran");
-    const bio = formData.get("bio");
-    const email = formData.get("email");
-    const noHp = formData.get("noHp");
-    const status = formData.get("status") === 'true';
+    // --- Persiapan Update ---
+    const updateData: any = { $set: {}, $unset: {} };
+
+    // Data Teks Biasa
+    updateData.$set.nama = formData.get("nama");
+    updateData.$set.nip = formData.get("nip");
+    updateData.$set.jabatan = formData.get("jabatan");
+    updateData.$set.kategori = formData.get("kategori");
+    updateData.$set.mataPelajaran = formData.get("mataPelajaran");
+    updateData.$set.bio = formData.get("bio");
+    updateData.$set.email = formData.get("email");
+    updateData.$set.noHp = formData.get("noHp");
+    updateData.$set.status = formData.get("status") === 'true';
 
     // Parse Pendidikan
-    let pendidikan = oldGuru.pendidikan; 
     const pendidikanString = formData.get("pendidikan") as string;
     if (pendidikanString) {
-      try { pendidikan = JSON.parse(pendidikanString); } catch (e) {}
+      try { 
+        updateData.$set.pendidikan = JSON.parse(pendidikanString); 
+      } catch (e) {
+        console.error("Gagal parse JSON pendidikan:", e);
+      }
+    }
+
+    // Handle Wali Kelas
+    const waliUntukKelasString = formData.get("waliUntukKelas") as string;
+    if (waliUntukKelasString) {
+      try {
+        updateData.$set.waliUntukKelas = JSON.parse(waliUntukKelasString);
+      } catch(e) {
+        console.error("Gagal parse JSON wali kelas:", e);
+      }
+    } else {
+      // Jika string kosong, hapus field dari dokumen
+      updateData.$unset.waliUntukKelas = "";
     }
 
     // Handle Foto
     const file = formData.get("foto") as File | null;
-    let fotoUrl = oldGuru.foto;
-
     if (file && file.size > 0) {
-      // Hapus Foto Lama
       if (oldGuru.foto && oldGuru.foto.startsWith("/uploads")) {
         try {
           const oldPath = path.join(process.cwd(), "public", oldGuru.foto);
           await unlink(oldPath);
         } catch (err) {}
       }
-
-      // Upload Foto Baru
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const filename = `guru-${Date.now()}-${file.name.replace(/\s+/g, "-").toLowerCase()}`;
       const uploadDir = path.join(process.cwd(), "public/uploads/guru");
       const filePath = path.join(uploadDir, filename);
-      
       await writeFile(filePath, buffer);
-      fotoUrl = `/uploads/guru/${filename}`;
+      updateData.$set.foto = `/uploads/guru/${filename}`;
+    }
+
+    // Hapus $unset jika tidak ada isinya, agar tidak error
+    if (Object.keys(updateData.$unset).length === 0) {
+      delete updateData.$unset;
     }
 
     // Update DB
-    const updatedGuru = await Guru.findByIdAndUpdate(
-      id,
-      {
-        nama, nip, jabatan, kategori, mataPelajaran, bio, email, noHp, status,
-        pendidikan, foto: fotoUrl
-      },
-      { new: true }
-    );
+    const updatedGuru = await Guru.findByIdAndUpdate(id, updateData, { new: true });
 
     if (user) { 
       await createLog({

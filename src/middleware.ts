@@ -35,6 +35,8 @@ export function middleware(request: NextRequest) {
       "/api/public/dokumen/[id]/download", //        
       "/api/public/guru", //        
       "/api/public/guru/[id]", //        
+      "/api/public/siswa", //        
+      "/api/public/siswa/[nisn]", //        
     ];
 
     // Khusus API Berita: GET boleh publik, tapi POST/PUT/DELETE wajib login

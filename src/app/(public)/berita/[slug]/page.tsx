@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: berita.judul,
       description: plainText,
-      url: `https://smetsaplg.id/berita/${slug}`, // Ganti domain asli
+      url: process.env.NEXT_PUBLIC_URL || "http://localhost:3000", // Ganti domain asli
       siteName: "SMA Methodist 1 Palembang",
       images: [
         {

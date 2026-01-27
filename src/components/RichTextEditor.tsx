@@ -94,7 +94,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: Props) 
   const formats = [
     "header",
     "bold", "italic", "underline", "strike", "blockquote",
-    "list", "bullet", "align",
+    "list", "align",
     "link", "image", "video",
   ];
 

@@ -7,7 +7,7 @@ import { IGuru } from "@/models/Guru";
 // --- 1. REAL FETCH DATA (Server Side) ---
 async function getGuru(id: string) {
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/public/guru/${id}`, {
     cache: "no-store", // Selalu ambil data terbaru
   });
@@ -36,7 +36,7 @@ async function getGuru(id: string) {
     description:
       rawGuru.bio?.substring(0, 155) ||
       `Profil lengkap ${rawGuru.nama}, ${rawGuru.jabatan} di SMA Methodist 1 Palembang.`,
-    bio: rawGuru.bio,
+    bio: rawGuru.bio || "Ora et labora.",
     // `image` untuk komponen, `imageUrl` untuk metadata
     image: rawGuru.foto || defaultProfilePicture,
     imageUrl: guruImage,
@@ -63,9 +63,10 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const data = await getGuru(params.id);
+  const { id } = await params;
+  const data = await getGuru(id);
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://sekolah-methodist-1.sch.id";
+    process.env.NEXT_PUBLIC_URL || "https://smetsaplg.id";
   const pageUrl = `${baseUrl}/guru-karyawan/${data.id}`;
 
   return {
@@ -83,7 +84,7 @@ export async function generateMetadata(
     },
     openGraph: {
       type: "profile",
-      username: data.id,
+      username: data.id.toString(),
       firstName: data.name.split(" ")[0],
       lastName: data.name.split(" ").slice(1).join(" ") || "",
       title: `${data.name} | ${data.jobTitle}`,
@@ -108,9 +109,10 @@ export async function generateMetadata(
 
 // --- 3. PAGE COMPONENT ---
 export default async function GuruPage({ params }: Props) {
-  const guruData = await getGuru(params.id);
+  const { id } = await params;
+  const guruData = await getGuru(id);
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://smetsaplg.id";
+    process.env.NEXT_PUBLIC_URL || "https://smetsaplg.id";
   const pageUrl = `${baseUrl}/guru-karyawan/${guruData.id}`;
 
   // --- JSON-LD (Structured Data) ---

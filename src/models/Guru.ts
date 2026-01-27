@@ -19,6 +19,14 @@ const SocialsSchema = new Schema(
   { _id: false }
 );
 
+// Sub-schema untuk Penugasan Wali Kelas
+const WaliKelasSchema = new Schema({
+  angkatan: { type: Number, required: true },
+  jurusan: { type: String, required: true },
+  rombel: { type: String, required: true },
+}, { _id: false });
+
+
 export interface IGuru extends Document {
   nama: string;
   nip: string; // Unik
@@ -39,6 +47,11 @@ export interface IGuru extends Document {
   email?: string;
   noHp?: string;
   status: boolean; // Aktif / Pensiun / Keluar
+  waliUntukKelas?: { // Opsional, hanya untuk wali kelas
+    angkatan: number;
+    jurusan: string;
+    rombel: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,6 +72,9 @@ const GuruSchema = new Schema<IGuru>(
     // Object untuk Media Sosial
     socials: SocialsSchema,
 
+    // Object untuk data Wali Kelas
+    waliUntukKelas: { type: WaliKelasSchema, required: false },
+
     email: { type: String },
     noHp: { type: String },
     status: { type: Boolean, default: true },
@@ -68,6 +84,11 @@ const GuruSchema = new Schema<IGuru>(
 
 // Indexing agar pencarian cepat
 GuruSchema.index({ nama: "text", nip: "text", jabatan: "text" });
+// Index Unik & Sparse untuk Wali Kelas
+// Hanya akan meng-index dokumen yang memiliki field `waliUntukKelas`.
+// Mencegah ada 2 guru yang menjadi wali untuk kelas yang sama persis.
+GuruSchema.index({ "waliUntukKelas.angkatan": 1, "waliUntukKelas.jurusan": 1, "waliUntukKelas.rombel": 1 }, { unique: true, sparse: true });
+
 
 const Guru = mongoose.models.Guru || mongoose.model<IGuru>("Guru", GuruSchema);
 export default Guru;

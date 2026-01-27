@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     await connectDB();
-    const { id } = params;
+    const { id } = await params;
 
     // Validasi apakah ID adalah format ObjectId yang valid
     if (!mongoose.Types.ObjectId.isValid(id)) {
