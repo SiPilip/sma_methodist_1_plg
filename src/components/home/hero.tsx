@@ -8,50 +8,42 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "../container";
+import { HiArrowLongRight } from "react-icons/hi2";
 
 const Hero = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
 
   const carouselItems = [
     {
-      title: "Visi",
+      title: "Membangun Generasi Unggul",
       content:
-        "Menjadi lembaga pendidikan Kristen yang unggul dalam menghasilkan lulusan beriman teguh, berpengetahuan luas, dan siap melayani masyarakat dengan kasih dan integritas.",
+        "Menjadi lembaga pendidikan Kristen yang unggul dalam menghasilkan lulusan beriman teguh, berpengetahuan luas, dan siap melayani.",
     },
     {
-      title: "Misi",
+      title: "Pendidikan Holistik & Beriman",
       content:
-        "Menyelenggarakan pendidikan berkualitas yang mengintegrasikan nilai-nilai Kristiani, mengembangkan potensi siswa secara holistik, serta menumbuhkan semangat kepedulian sosial dan kepemimpinan.",
+        "Mengintegrasikan nilai-nilai Kristiani dalam setiap aspek pembelajaran untuk mengembangkan potensi siswa secara utuh.",
     },
     {
-      title: "Kata Sambutan",
+      title: "Berkarakter, Cerdas & Berintegritas",
       content:
-        "Dengan sukacita kami menyambut Anda di SMA Methodist 1 Palembang. Kami berkomitmen untuk mendidik generasi penerus yang tidak hanya cerdas secara akademis, tetapi juga kuat dalam karakter dan iman. Mari bergabung bersama kami.",
+        "Kami berkomitmen mendidik generasi penerus yang cerdas secara akademis dan kuat dalam karakter serta iman.",
     },
   ];
 
   const handleDotClick = useCallback(
     (index: number) => {
-      if (!api) {
-        return;
-      }
+      if (!api) return;
       api.scrollTo(index);
     },
     [api]
   );
 
   useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    setCount(api.scrollSnapList().length);
+    if (!api) return;
     setCurrent(api.selectedScrollSnap() + 1);
-
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap() + 1);
     });
@@ -59,58 +51,74 @@ const Hero = () => {
 
   return (
     <section
-      className="relative h-[70vh] w-full overflow-hidden"
+      className="relative h-[90vh] min-h-[600px] w-full overflow-hidden font-sans"
       aria-label="Selamat Datang di SMA Methodist 1 Palembang"
     >
+      {/* Background Video */}
       <video
         autoPlay
         loop
         muted
+        playsInline
         className="absolute top-0 left-0 w-full h-full object-cover"
-        aria-label="Video drone pemandangan sekolah SMA Methodist 1 Palembang"
       >
         <source src="/videos/hero_drone.mp4" type="video/mp4" />
-        Browser Anda tidak mendukung tag video.
       </video>
-      <div className="absolute inset-0 bg-[#2E3853]/60 bg-opacity-50 flex flex-col items-center justify-center">
+
+      {/* Minimalist Overlay - Uniform Darkening for Clarity */}
+      <div className="absolute inset-0 bg-black/40" />
+
+      {/* Content */}
+      <div className="absolute inset-0 flex flex-col justify-center">
         <Container>
           <Carousel
             setApi={setApi}
-            className="w-full"
+            className="w-full max-w-4xl mx-auto text-center"
             plugins={[
               Autoplay({
-                delay: 5000,
+                delay: 6000,
                 stopOnInteraction: false,
               }),
             ]}
-            aria-roledescription="carousel"
-            aria-label="Visi, Misi, dan Kata Sambutan"
           >
             <CarouselContent>
               {carouselItems.map((item, index) => (
-                <CarouselItem key={index} aria-roledescription="slide">
-                  <div className="p-1 text-white">
-                    <h2 className="text-3xl lg:text-5xl font-semibold">
+                <CarouselItem key={index}>
+                  <div className="flex flex-col items-center gap-6 px-4 py-8 animate-fade-in-up">
+                    <h1 className="text-4xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl">
                       {item.title}
-                    </h2>
-                    <p className="mt-2 lg:text-xl max-w-4xl">{item.content}</p>
+                    </h1>
+                    <p className="max-w-2xl text-lg font-medium leading-relaxed text-white/90 md:text-xl">
+                      {item.content}
+                    </p>
+                    <div className="pt-4">
+                        <button className="flex items-center gap-3 px-8 py-3 text-sm font-bold tracking-widest text-white uppercase transition-all border border-white/30 rounded-full hover:bg-white hover:text-black hover:border-white group">
+                            Selengkapnya
+                            <HiArrowLongRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
+                        </button>
+                    </div>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
           </Carousel>
-          <div className="flex justify-start w-full mt-32">
-            {carouselItems.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => handleDotClick(index)}
-                className={`w-3 h-3 mx-1 rounded-full ${
-                  current === index + 1 ? "bg-white" : "bg-gray-400"
-                }`}
-              />
-            ))}
-          </div>
         </Container>
+      </div>
+
+      {/* Minimalist Controls - Bottom Center */}
+      <div className="absolute bottom-12 left-0 w-full flex justify-center gap-3">
+        {carouselItems.map((_, index) => (
+            <button
+            key={index}
+            onClick={() => handleDotClick(index)}
+            className={`transition-all duration-500 rounded-full h-1.5 ${
+                current === index + 1 
+                ? "w-12 bg-white" 
+                : "w-2 bg-white/40 hover:bg-white/70"
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+            />
+        ))}
       </div>
     </section>
   );

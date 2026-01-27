@@ -4,6 +4,7 @@ import Script from "next/script";
 // Komponen Client
 import Berita from "@/components/home/berita";
 import CardHome from "@/components/home/card-home";
+import Filosofi from "@/components/home/filosofi";
 import Hero from "@/components/home/hero";
 import TentangKami from "@/components/home/tentang_kami";
 
@@ -129,6 +130,8 @@ export default async function Home() {
       <CardHome initialData={statsData} />
       
       <TentangKami />
+
+      <Filosofi />
       
       <Berita initialData={newsData} />
     </>

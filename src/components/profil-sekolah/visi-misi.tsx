@@ -5,7 +5,7 @@ import { HiSparkles, HiFlag, HiCheckCircle } from "react-icons/hi2";
 
 export default function VisiMisi() {
   return (
-    <section className="relative w-full py-20 overflow-hidden bg-gray-50 dark:bg-[#1a202c]">
+    <section className="relative w-full py-20 overflow-hidden bg-gray-50 dark:bg-[#495A87]">
       {/* --- BACKGROUND DECORATION (Gen-Z Glow Effect) --- */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-300/30 dark:bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-300/30 dark:bg-indigo-600/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 pointer-events-none" />

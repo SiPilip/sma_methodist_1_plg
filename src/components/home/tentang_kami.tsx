@@ -51,7 +51,7 @@ export default function TentangKami() {
             </div>
 
             <div className="mt-10 text-center lg:text-left">
-              <button className="px-8 py-3 text-sm font-semibold text-white transition-all duration-300 bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 hover:shadow-blue-500/25 hover:-translate-y-1">
+              <button className="px-8 py-3 text-sm font-semibold text-white transition-all duration-300 bg-blue-900 rounded-full shadow-lg hover:bg-blue-700 hover:shadow-blue-500/25 hover:-translate-y-1">
                 Selengkapnya
               </button>
             </div>

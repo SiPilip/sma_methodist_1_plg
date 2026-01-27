@@ -54,7 +54,7 @@ async function getGuru(id: string) {
 }
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 // --- 2. DYNAMIC METADATA (SEO Core) ---

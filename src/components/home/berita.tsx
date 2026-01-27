@@ -53,7 +53,7 @@ export default function Berita({ initialData }: { initialData?: any[] }) {
            
            <Link 
              href="/berita" 
-             className="px-6 py-2.5 text-sm font-semibold text-white transition-all bg-blue-600 rounded-full shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:shadow-blue-500/40 hover:-translate-y-0.5 flex items-center gap-2 group ring-2 ring-transparent hover:ring-blue-200 dark:hover:ring-blue-800"
+             className="px-6 py-2.5 text-sm font-semibold text-white transition-all bg-blue-900 rounded-full shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:shadow-blue-500/40 hover:-translate-y-0.5 flex items-center gap-2 group ring-2 ring-transparent hover:ring-blue-200 dark:hover:ring-blue-800"
            >
              Lihat Semua Berita 
              <HiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1"/>
@@ -107,7 +107,7 @@ export default function Berita({ initialData }: { initialData?: any[] }) {
 
                       {/* Category Badge overlay at bottom */}
                        <div className="absolute bottom-4 left-4">
-                            <Badge className="px-3 py-1 text-xs font-bold text-white border-0 shadow-lg bg-blue-600/90 hover:bg-blue-700 backdrop-blur-md">
+                            <Badge className="px-3 py-1 text-xs font-bold text-white border-0 shadow-lg bg-blue-800/90 hover:bg-blue-700 backdrop-blur-md">
                                 {item.kategori}
                             </Badge>
                        </div>
@@ -115,7 +115,7 @@ export default function Berita({ initialData }: { initialData?: any[] }) {
 
                     {/* Content */}
                     <div className="flex flex-col flex-grow p-6">
-                      <h3 className="mb-3 text-xl font-bold leading-snug text-gray-800 transition-colors line-clamp-2 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-300">
+                      <h3 className="mb-3 text-xl font-bold leading-snug text-gray-800 transition-colors line-clamp-2 group-hover:text-blue-900 dark:text-white dark:group-hover:text-blue-300">
                         {item.judul}
                       </h3>
                       
@@ -125,7 +125,7 @@ export default function Berita({ initialData }: { initialData?: any[] }) {
                        />
 
                        {/* Footer / Read More */}
-                       <div className="mt-auto pt-4 border-t border-gray-50 dark:border-white/10 flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 group/link">
+                       <div className="mt-auto pt-4 border-t border-gray-50 dark:border-white/10 flex items-center text-sm font-semibold text-blue-900 dark:text-blue-400 group/link">
                           Baca Selengkapnya
                           <HiArrowRight className="w-4 h-4 ml-1 transition-transform transform group-hover/link:translate-x-1" />
                        </div>
