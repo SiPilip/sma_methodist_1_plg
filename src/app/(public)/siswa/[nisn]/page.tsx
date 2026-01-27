@@ -44,7 +44,7 @@ async function getSiswa(nisn: string): Promise<any> {
 }
 
 type Props = {
-  params: { nisn: string };
+  params: Promise<{ nisn: string }>;
 };
 
 // --- 2. DYNAMIC METADATA (SEO) ---
@@ -52,7 +52,8 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const siswa = await getSiswa(params.nisn);
+  const { nisn } = await params;
+  const siswa = await getSiswa(nisn);
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
   const imageUrl = siswa.foto ? `${baseUrl}${siswa.foto}` : `${baseUrl}/img/logo.png`;
@@ -80,7 +81,8 @@ export async function generateMetadata(
 
 // --- 3. MAIN PAGE COMPONENT ---
 export default async function Page({ params }: Props) {
-  const siswaData = await getSiswa(params.nisn);
+  const { nisn } = await params;
+  const siswaData = await getSiswa(nisn);
 
   // JSON-LD Schema (SEO)
   const jsonLd = {
