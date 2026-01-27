@@ -11,7 +11,9 @@ import ReactQuill from "react-quill-new";
 const QuillNoSSRWrapper = dynamic(
   async () => {
     const { default: RQ } = await import("react-quill-new");
-    return ({ forwardedRef, ...props }: any) => <RQ ref={forwardedRef} {...props} />;
+    const QuillComponent = ({ forwardedRef, ...props }: any) => <RQ ref={forwardedRef} {...props} />;
+    QuillComponent.displayName = "QuillComponent";
+    return QuillComponent;
   },
   { ssr: false, loading: () => <div className="h-40 bg-gray-50 animate-pulse rounded-lg border"></div> }
 );
